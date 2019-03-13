@@ -1,0 +1,43 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+    width : 100%;
+}
+.toggle {
+    background: orange !important;
+}
+.toggle:hover{
+    background: darkorange !important;
+}
+.gitButton{
+    padding:15px 30px;
+    background-color: #47a230;
+    text-decoration: none;
+    font-weight: 900;
+    color: white;
+    text-transform:uppercase;
+    transition: background-color .5s;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.gitButton:hover {background-color: #1d7806}
+.gitButton:visited {color: white;}
+.manualButton {
+    padding:15px 30px;
+    background-color: #308ba2;
+    margin-left: 40px;
+    text-decoration: none;
+    font-weight: 900;
+    color: white;
+    text-transform:uppercase;
+    transition: background-color .5s;
+    border: none;
+    border-radius: 2px;			
+    cursor: pointer;
+}
+
+
