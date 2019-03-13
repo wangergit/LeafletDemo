@@ -1,13 +1,7 @@
-body {
-	background:#b5d0d0;
-	color:#285585;
-	font-family:Arial;
-}
 body#home {
-	background:url('images/back.png') no-repeat top left #b5d0d0;
+	background:url('../images/back.png') no-repeat top left #b5d0d0;
 	margin-left:150px;
 }
-
 a {
 	color:#1978cf;
 }
@@ -28,12 +22,6 @@ h3 a:hover {
 	position: relative;
 	white-space:nowrap;
 	font-size:1em;
-}
-#map {
-	border-radius:.125em;
-	border:2px solid #1978cf;
-	margin: 4px 0;
-	float:left;	
 }
 ul {
 	font-size:.85em;

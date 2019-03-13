@@ -29,7 +29,7 @@ var tiledLayer = L.tileLayer(tileUrl, tileOptions);
 //创建地图组件
 var map = new L.Map('map' ,{
 	center: [50.0, 10.0],
-    zoom: 5,
+  zoom: 5,
 	zoomControl: false ,//缩放控件
 	attributionControl : false,//属性控件
 	// layers : [//底图
@@ -71,10 +71,10 @@ map.addControl(L.control.basemaps({
 	tileZ: 1
 }));
 //map.setView(new L.LatLng(59.92448055859924, 10.758276373601069),10);//视图
-L.control.scale({imperial : false,position : 'bottomleft'}).addTo(map);//比例尺
+L.control.scale({imperial : false , position : 'bottomleft'}).addTo(map);//比例尺
 L.control.pan().addTo(map);//平移
 L.control.zoom().addTo(map);//缩放
-L.control.navbar().addTo(map);//平移
+L.control.navbar().addTo(map);//漫游记忆
 L.control.mousePosition({//鼠标信息
 	lngFirst : true
 }).addTo(map);
@@ -245,15 +245,22 @@ L.control.magnifyingglass(magnifyingGlass, {
 //图层检索要素
 var geojsonOpts = {
 	pointToLayer: function(feature, latlng) {
+		var myIcon = L.icon({
+				iconUrl: 'http://localhost/webgis/images/custom-icon.png',
+				//shadowUrl: 'leaf-shadow.png',
+				iconSize:     [20, 20], // size of the icon
+				//shadowSize:   [50, 64], // size of the shadow
+				//iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+				//shadowAnchor: [4, 62],  // the same for the shadow
+				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+		});
 		return L.marker(latlng, {
-			icon: L.divIcon({
+			/*icon: L.divIcon({
 				className: feature.properties.amenity,
 				iconSize: L.point(16, 16),
-				html: feature.properties.amenity[0].toUpperCase(),
-			})
-			/*icon : L.Icon({
-				iconUrl : "https://unpkg.com/leaflet@1.3.0/dist/images/marker-icon.png"
+				html: feature.properties.amenity[0].toUpperCase()
 			})*/
+			icon : myIcon
 		}).bindPopup(feature.properties.amenity+'<br><b>'+feature.properties.name+'</b>');
 	}
 };
@@ -261,7 +268,7 @@ var poiLayers = L.layerGroup([
 	L.geoJson(bar, geojsonOpts),
 	L.geoJson(pharmacy, geojsonOpts),
 	L.geoJson(restaurant, geojsonOpts)
-]).addTo(map);
+]);
 
 L.control.search({
 	layer: poiLayers,
@@ -272,3 +279,29 @@ L.control.search({
 		return '<a href="#" class="'+type+'">'+text+'<b>'+type+'</b></a>';
 	}
 }).addTo(map);
+var overlayMaps = { 
+		"Cities": L.geoJson(bar, geojsonOpts),
+		"Cities1": L.geoJson(pharmacy, geojsonOpts),
+		"Cities2": L.geoJson(restaurant, geojsonOpts)
+};
+var base1 = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+		attribution: '',
+		subdomains: 'abcd',
+		maxZoom: 20,
+		minZoom: 0,
+		label: 'Toner',
+		iconURL : 'http://localhost/LeafletDemo/LeafletDemo/images/0.jpg'
+	});
+	var base2 = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
+		attribution: '',
+		subdomains: 'abcd',
+		maxZoom: 16,
+		minZoom: 1,
+		label: 'Watercolor',
+		iconURL : 'http://localhost/LeafletDemo/LeafletDemo/images/0.png'
+	});
+var baseMaps = { 
+	"<span style='color: gray'>Grayscale</span>": base1, //前面是控件显示的图层名称支持html
+	"Streets": base2 
+}; //
+L.control.layers(baseMaps,overlayMaps).addTo(map);
