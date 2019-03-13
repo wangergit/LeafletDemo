@@ -30,7 +30,7 @@
 			zoomLevelFixed: false,
 			centerFixed: false,
 			zoomAnimation: false,
-			autoToggleDisplay: false,
+			autoToggleDisplay: true,
 			minimized: false,
 			width: 150,
 			height: 150,

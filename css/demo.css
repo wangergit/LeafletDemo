@@ -9,6 +9,9 @@ html, body, #map {
     margin: 0px;
     padding: 0px;
 }
+.leaflet-control-navbar{
+    margin-top : 235px;
+}
 .toggle {
     background: orange !important;
 }

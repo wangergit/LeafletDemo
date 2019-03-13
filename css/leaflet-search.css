@@ -144,7 +144,7 @@ ul {
 	border-radius:2px;
 	height:22px;
 	padding:0 20px 0 2px;
-	margin:4px 0 4px 4px;
+	margin: 6px 12px 6px 8px;
 }
 .leaflet-control-search.search-load .search-input {
 	background: url('../images/loader.gif') no-repeat center right #fff;
@@ -181,13 +181,13 @@ ul {
 .leaflet-control-search .search-button {
 	display:block;
 	float:left;
-	width:30px;
-	height:30px;	
-	background: url('../images/search-icon.png') no-repeat 4px 4px #fff;
+	width: 35px;
+	height: 35px;
+	background: url('../images/search-icon.png') no-repeat 6px 9px #fff;
 	border-radius:4px;
 }
 .leaflet-control-search .search-button:hover {
-	background: url('../images/search-icon.png') no-repeat 4px -20px #fafafa;
+	background: url('../images/search-icon.png') no-repeat 6px 9px #fafafa;
 }
 .leaflet-control-search .search-tooltip {
 	position:absolute;

@@ -1,4 +1,6 @@
 {
+    "host" : "localhost",
+    "errorTileUrl" : "http://localhost/webgis/images/layers-2x.png",
     "attribute" : {
 		"name" : "2018@ienc",
 		"title" : "北京恒济引航科技有限公司",
@@ -12,8 +14,18 @@
     "scalePosition" : "bottomleft",
     "panControl" : true,
     "panPosition" : "topleft",
+    "searchControl" : true,
+    "searchPosition" : "topright",
+    "fullscreenControl" : true,
+    "fullscreenPosition" : "topright",
     "zoomControl" : true,
     "zoomPosition" : "topleft",
+    "zoomLevel" : {
+        "countryLevel" : 2,
+        "provinceLevel" : 7,
+        "cityLevel" : 12 ,
+        "streetLevel" : 19
+    },
     "navbarControl" : true,
     "navbarPosition" : "topleft",
     "mousePositionControl" : true,
@@ -22,15 +34,41 @@
     "printerPosition" : "topleft",
     "miniMapControl" : true,
     "miniMapPosition" : "topleft",
-    "magnifyingGlassControl" : true,
+    "measureControl" : true,
+    "measurePosition" : "topright",
+    "magnifyingGlassControl" : false,
     "magnifyingGlassPosition" : "topleft",
     "businessData" : [
         {
             "name" : "",
             "xhrUrl" : "",
             "clickUrl" : "",
-            "image" : "",
-            "visible" : true
+            "icon" : "",
+            "iconSize" : [],
+            "visible" : true,
+            "popupAnchor" : [0,0]
+        }
+    ],
+    "tiledLayers" : [
+        {
+            "name" : "openstreetmap",
+            "attribute" : "",
+            "img" : "http://localhost/LeafletDemo/LeafletDemo/images/0.jpg",
+            "path" : "http://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "visible" : true,
+            "label" : "openstreetmap",
+            "maxZoom" : 20,
+		    "minZoom" : 0
+        },
+        {
+            "name" : "ESRI街道",
+            "attribute" : "",
+            "img" : "http://localhost/LeafletDemo/LeafletDemo/images/0.png",
+            "path" : "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}",
+            "visible" : false,
+            "label" : "ESRI街道",
+            "maxZoom" : 20,
+		    "minZoom" : 0
         }
     ]
 }

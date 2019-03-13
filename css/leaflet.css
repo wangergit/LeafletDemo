@@ -142,12 +142,16 @@
 	margin-bottom: 10px;
 	}
 .leaflet-left .leaflet-control {
-	margin-left: 10px;
+	margin-left: 14px;
 	}
 .leaflet-right .leaflet-control {
 	margin-right: 10px;
 	}
-
+.leaflet-control-mouseposition{
+	background: white;
+	padding: 2px;
+	color: blue;
+}
 
 /* zoom and fade animations */
 
@@ -330,7 +334,7 @@
 	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
 	background: #fff;
 	border-radius: 5px;
-	}
+}
 .leaflet-control-layers-toggle {
 	background-image: url(../images/layers.png);
 	width: 36px;
@@ -341,8 +345,8 @@
 	background-size: 26px 26px;
 	}
 .leaflet-touch .leaflet-control-layers-toggle {
-	width: 44px;
-	height: 44px;
+	width: 35px;
+	height: 35px;
 	}
 .leaflet-control-layers .leaflet-control-layers-list,
 .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
@@ -404,7 +408,7 @@
 	font-size: 11px;
 	}
 .leaflet-left .leaflet-control-scale {
-	margin-left: 5px;
+	margin-left: 14px;
 	}
 .leaflet-bottom .leaflet-control-scale {
 	margin-bottom: 5px;
@@ -508,7 +512,7 @@
 	}
 .leaflet-container a.leaflet-popup-close-button:hover {
 	color: #999;
-	}
+}
 .leaflet-popup-scrolled {
 	overflow: auto;
 	border-bottom: 1px solid #ddd;
@@ -621,4 +625,7 @@
 	left: 0;
 	margin-left: -12px;
 	border-right-color: #fff;
+	}
+	.leaflet-control-navbar{
+		margin-top : 235px;
 	}

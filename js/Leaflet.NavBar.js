@@ -27,7 +27,7 @@
 
       // Create toolbar
       var controlName = 'leaflet-control-navbar',
-      container = L.DomUtil.create('div', controlName + ' leaflet-bar');
+      container = L.DomUtil.create('div', 'leaflet-bar ' + controlName);
 
       // Add toolbar buttons
       this._homeButton = this._createButton(options.homeTitle, controlName + '-home', container, this._goHome);
@@ -41,7 +41,7 @@
       map.once('moveend', function() {this._map.on('moveend', this._updateHistory, this);}, this);
       // Set intial view to home
       map.setView(options.center, options.zoom);
-
+      container.style.marginTop = "234px"
       return container;
     },
 
