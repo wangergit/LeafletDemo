@@ -1,7 +1,11 @@
 //全局变量
 var map = null
 var basemaps = [] //底图
-var osm ;
+var osm 
+var tiles
+var leafletView = null
+var heatMapLayer = null
+var windowInterval = null
 var printer = null
 var config = {}
 
@@ -11,26 +15,38 @@ var config = {}
  */
 function initMap(data){
     config = data
-    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18});
-    for(var i = 0 ; i < config.tiledLayers.length ; i ++){
-        basemaps.push(L.tileLayer(config.tiledLayers[i].path, {
-            visible : config.tiledLayers[i].visible,
-            //errorTileUrl : config.errorTileUrl,
-            label : config.tiledLayers[i].label,
-            maxZoom : config.tiledLayers[i].maxZoom,
-            minZoom : config.tiledLayers[i].minZoom
-        }))
-    }
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18})
+
     //创建地图组件
     map = new L.Map('map' ,{
         zoomControl: false ,//缩放控件
         attributionControl : false,//属性控件
-        layers : basemaps
+        //layers : basemaps
     })
+    for(var i = 0 ; i < config.tiledLayers.length ; i ++){
+        if(config.tiledLayers[i].label.indexOf("街道") > -1){
+            tiles = L.tileLayer(config.tiledLayers[i].path, {
+                visible : config.tiledLayers[i].visible,
+                //errorTileUrl : config.errorTileUrl,
+                label : config.tiledLayers[i].label,
+                maxZoom : config.tiledLayers[i].maxZoom,
+                minZoom : config.tiledLayers[i].minZoom
+            }).addTo(map)
+            basemaps.push(tiles)
+        }else{
+            basemaps.push(L.tileLayer(config.tiledLayers[i].path, {
+                visible : config.tiledLayers[i].visible,
+                //errorTileUrl : config.errorTileUrl,
+                label : config.tiledLayers[i].label,
+                maxZoom : config.tiledLayers[i].maxZoom,
+                minZoom : config.tiledLayers[i].minZoom
+            }).addTo(map))
+        }
+    }
     //书签
     if (!map.restoreView()) {
-        map.setView([config.center], config.zoom);
+        map.setView([config.center], config.zoom)
     }
     attributionControl()
     zoomControl()
@@ -41,10 +57,12 @@ function initMap(data){
     mousePositioControl()
     printerControl()
     magnifyingGlassControl()
-    searchControl()
-    layersListControl()
+    //searchControl()
+    //layersListControl()
+    getBusinessData()
     miniMapControl()
     basemapsControl()
+    initMenu(config.menuList)
 }
 
 function getConfig (){
@@ -139,15 +157,10 @@ function mousePositioControl(){
  * 打印
  */
 function printerControl(){
-    var tileUrl = 'http://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    var tileOptions = {
-        attribution: ''
-    }
-    var tiledLayer = L.tileLayer(tileUrl, tileOptions)
     config.printerControl ? printer = L.easyPrint({
-        tileLayer: tiledLayer,
-        sizeModes: ['Current'],
-        filename: 'map',
+        tileLayer: tiles,
+        sizeModes: ['A4Landscape', 'A4Portrait'],
+        filename: 'myMap',
         exportOnly: true,
         hideControlContainer: true,
         position : config.printerPosition
@@ -395,6 +408,162 @@ function measureControl(){
     config.measureControl ? L.control.measure({
         position : config.measurePosition
     }).addTo(map) : null
+}
+
+/**
+ * 初始化菜单
+ * @param [] results 
+ */
+function initMenu(results) {
+    if (results == null && results.length == 0) return
+    var content = ""
+    content += "<div id='slider1'> <a class='buttons prev' href='#'>left</a>  "
+    content += "<div class='viewport'>"
+    content += "<ul class='overview'>"
+    for (var i = 0; i < results.length; i++) {
+        content += "<li onclick='menuClick(" + results[i]["menuId"] + ")'><img src='images/appleToolbar/" + results[i]["img"] + "' alt='" + results[i]["name"] + "' /><span>" + results[i]["name"] + "</span></li>"
+    }
+    // if (g_userId != "ebe5027d-906d-4485-acbd-753d7421c790") {
+    //     content += "<li onclick='appleToolbarClick(\"列表\")'><img src='Images/appleToolbar/icon_gengduo02.png' alt='列表' /><span>列表</span></li>  "
+    // }
+    content += "</ul></div><a class='buttons next' href='#'>right</a></div>"
+    $("#dockContainer")[0].innerHTML = content
+    $('#slider1').tinycarousel()
+}
+
+/**
+ * 菜单点击事件
+ */
+function menuClick(menuId){
+    // L.control.window("map",{
+	// 	visible : true,
+	// 	title : "业务信息",
+	// 	content : "<button type='button' class='btn btn-primary'>Primary</button>"
+	// })
+    switch(menuId){
+        case 1 ://经纬度定位
+            var html = ""
+            html += '<input id="jd" type="text" value="" placeholder="经度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
+            html += '<input id="wd" type="text" value="" placeholder="纬度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
+            html += '<input id="zoom" type="text" value="" placeholder="级别" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
+            html += '</br><button type="button" class="btn btn-primary" onclick="centerAndZoom()">定位</button>'
+            L.control.window("map",{
+                visible : true,
+                title : "经纬度定位",
+                content : html
+            })
+            break
+        case 2 :
+
+        break
+        case 3 :
+
+        break
+        case 4 ://聚合
+            var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
+            for(var i = 0 ; i < config.businessData.length ; i ++){
+                if(config.businessData[i].type == "point"){
+                    html += '<option value="' + config.businessData[i].name + '">' + config.businessData[i].name + '</option>'
+                }
+            }
+            html += '</select>'
+            html += '<div href="#" id="size">Cluster size: <input type="range" value="160" min="35" max="500" step="1" id="sizeInput"/><span id="currentSize">160</span></div>'
+            html += '<button type="button" class="btn btn-primary" onclick="PruneClusterLayer()">聚合</button>'
+            html += '<button type="button" class="btn btn-primary" onclick="clearPruneClusterLayer()" style="margin-left: 35px;">清除</button>'
+            L.control.window("map",{
+                visible : true,
+                title : "数据聚合",
+                content : html
+            })
+            var currentSizeSpan = document.getElementById('currentSize')
+            var updateSize = function () {
+                currentSizeSpan.firstChild.data = this.value
+            }
+            document.getElementById('sizeInput').onchange = updateSize
+            document.getElementById('sizeInput').oninput = updateSize
+        break
+        case 5:
+            var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
+            for(var i = 0 ; i < config.businessData.length ; i ++){
+                if(config.businessData[i].type == "point"){
+                    html += '<option value="' + config.businessData[i].name + '">' + config.businessData[i].name + '</option>'
+                }
+            }
+            html += '</select>'
+            html += '<button type="button" class="btn btn-primary" onclick="HeatLayer()">分析</button>'
+            html += '<button type="button" class="btn btn-primary" onclick="clearHeatLayer()" style="margin-left: 35px;">清除</button>'
+            L.control.window("map",{
+                visible : true,
+                title : "热力分析",
+                content : html
+            })
+        break
+        case 6 :
+
+        break
+        case 7 :
+
+        break
+        case 8:
+
+        break
+        default:
+        break
+    }
+}
+
+/**
+ * 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} zoom 
+ */
+function centerAndZoom(x,y,zoom){
+    var jd = $("#jd")[0].value
+    var wd = $("#wd")[0].value
+    var zoom = $("#zoom")[0].value
+    map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+}
+
+/**
+ * 加载业务数据
+ */
+function getBusinessData(){
+    var overlayMaps = {}
+    for(var i = 0 ; i < config.businessData.length ; i ++){
+        var geojsonOpts = {
+            pointToLayer : function(feature, latlng) {
+                var myIcon = L.icon({
+                    iconUrl: config.businessData[i].icon,
+                    iconSize : config.businessData[i].iconSize,
+                    popupAnchor : config.businessData[i].popupAnchor
+                })
+                var d = L.marker(latlng, {
+                    icon : myIcon
+                })
+                return L.marker(latlng, {
+                    icon : myIcon
+                }).bindTooltip(feature.properties.typeName+'<br><b>'+feature.properties.name+'</b>')
+            }
+        }
+        //var src = config.businessData[i].xhrUrl
+        // var str = ""
+        // $.ajaxSettings.async = false
+        // $.get(src,function(data,status){
+        //     debugger
+        //     str =  data
+        // });
+        // $.ajaxSettings.async = true
+        // overlayMaps[config.businessData[i].name] = L.geoJson(str,geojsonOpts)
+        var results = exchangeData(data)
+        //overlayMaps["<span class='basinessSpan' style='background-image:url(" + config.businessData[i].icon + ")'></span>" + config.businessData[i].name] = L.geoJson(results,geojsonOpts)
+        overlayMaps[config.businessData[i].name] = L.geoJson(results,geojsonOpts)
+    }
+    var baseMaps = {}
+    for(var i = 0 ; i < basemaps.length ; i ++){
+        baseMaps[basemaps[i].options.label] = basemaps[i]
+    }
+    L.control.layers(baseMaps,overlayMaps).addTo(map)
 }
 
 getConfig()

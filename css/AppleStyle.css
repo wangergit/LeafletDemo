@@ -1,0 +1,164 @@
+img
+{
+    border: none;
+}
+
+#videoDock
+{
+    width: 600px;
+    position: absolute;
+    text-align: center;
+    bottom: 25px;
+    z-index: 9999;
+    height: 76px;
+    left: 30%;
+}
+
+.dock-container
+{
+    opacity: 0.9;
+    width: auto;
+    height: 76px;
+    /* background: url(../images/appleToolbar/dock-bg.png) repeat-x left top; */
+    background: gray;
+    position: absolute;
+    bottom: 0px;
+    _filter: alpha(opacity=80);
+    _height: 80px;
+    -moz-box-shadow: 1px 1px 4px #222;
+    -webkit-box-shadow: 1px 1px 4px #222;
+    box-shadow: 1px 1px 4px #222;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px; /*behavior: url(../Styles/ie-css3.htc);*/
+}
+.dock-item
+{
+    margin-top: -5px;
+}
+.toolBarDivForIE
+{
+    display: none;
+    height: 50px;
+    background: url(../images/appleToolbar/dock-bg.png) repeat-x left top;
+    width: 330px;
+    position: absolute;
+    text-align: center;
+    margin-left: -165px;
+    _filter: alpha(opacity=80); /*margin:0px auto;*/
+}
+.toolBarDivForIE img
+{
+    border: none;
+    margin: 7px auto;
+    position: relative;
+    height: 80%;
+}
+a.dock-item
+{
+    display: block;
+    font: bold 12px Arial, Helvetica, sans-serif;
+    width: 40px;
+    color: #000;
+    bottom: 5px;
+    position: absolute;
+    text-align: center;
+    text-decoration: none;
+    _bottom: 30px;
+}
+.dock-item span
+{
+    /*display: none;*/
+    padding-left: 20px;
+}
+.dock-item img
+{
+    border: none;
+    margin: 5px 10px 0px;
+    width: 100%; /*padding-bottom: 8px;*/
+}
+/* Tiny Carousel */
+#slider1
+{
+    height: 100%;
+    width: 100%;
+    /* overflow: hidden; */
+    /* padding: 0 0 10px; */
+}
+#slider1 .viewport img
+{
+    width: 50px;
+}
+#slider1 .viewport span
+{
+   display: block;
+   color: white;
+}
+#slider1 .viewport li:hover
+{
+    /* color: blanchedalmond; */
+    font-weight: bold;
+    /* background: rebeccapurple; */
+    /* border-radius: 20px; */
+    font-size: 16px;
+}
+#slider1 .viewport
+{
+    float: left;
+    width: 490px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+    
+#slider1 .viewport li
+{
+    cursor:pointer;
+}
+#slider1 .buttons
+{
+    display: block;
+    margin: 19px 10px 0 5px;
+    background-position: 0 -38px;
+    text-indent: -999em;
+    float: left;
+    width: 39px;
+    height: 37px;
+    overflow: hidden;
+    position: relative;
+}
+#slider1 .prev
+{
+    background: url("../images/appleToolbar/leftArrow.png") no-repeat scroll 0 0 transparent;
+        background-position: 13px 12px;
+    
+}
+#slider1 .next
+{
+    background: url("../images/appleToolbar/rightArrow.png") no-repeat scroll 0 0 transparent;
+        background-position: 13px 12px;
+    margin: 19px 0 0 10px;
+}
+#slider1 .disable
+{
+    visibility: hidden;
+}
+#slider1 .overview
+{
+    list-style: none;
+    position: absolute;
+    padding: 0px;
+    margin: 0px;
+    width: 240px;
+    left: 0px ;
+    top : 4px
+}
+#slider1 .overview li
+{
+    float: left;
+    margin: 0 0px 0 0;
+    padding: 1px;
+    height: 100%;
+    border: none;
+    width: 80px;
+}
