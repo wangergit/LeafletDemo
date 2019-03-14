@@ -1,4 +1,4 @@
-//全局变量
+﻿//全局变量
 var map = null
 var basemaps = [] //底图
 var osm 
@@ -46,7 +46,7 @@ function initMap(data){
     }
     //书签
     if (!map.restoreView()) {
-        map.setView([config.center], config.zoom)
+        map.setView(config.center, config.zoom)
     }
     attributionControl()
     zoomControl()
