@@ -50,7 +50,7 @@ function initMap(data){
     }
     //书签
     if (!map.restoreView()) {
-        map.setView([config.center], config.zoom)
+        map.setView(config.center, config.zoom)
     }
     drawnItems = L.featureGroup()
     map.addLayer(drawnItems)
