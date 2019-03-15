@@ -8,6 +8,10 @@ var heatMapLayer = null
 var windowInterval = null
 var printer = null
 var config = {}
+var drawnItems
+var drawTool
+var poiLayers
+var searchControl
 
 /**
  * 初始化地图组件
@@ -48,6 +52,8 @@ function initMap(data){
     if (!map.restoreView()) {
         map.setView([config.center], config.zoom)
     }
+    drawnItems = L.featureGroup()
+    map.addLayer(drawnItems)
     attributionControl()
     zoomControl()
     fullscreenControl()
@@ -57,7 +63,6 @@ function initMap(data){
     mousePositioControl()
     printerControl()
     magnifyingGlassControl()
-    searchControl()
     //layersListControl()
     getBusinessData()
     miniMapControl()
@@ -67,27 +72,6 @@ function initMap(data){
 
 function getConfig (){
     sendAjax("config/config.json","GET",initMap)
-}
-
-/**
- * 请求JSON数据
- * @param path  请求路径   String
- * @param type  请求类型   "GET"/"POST"
- * @param callback  function
- */
-function sendAjax(path , type , callback){
-	$.ajax({
-		type : type,
-		url : path,
-		dataType : "json",
-		contentType:"application/json;charset=utf-8",
-		success : function(result) {
-			if(callback){callback(result)}
-		},
-		error : function(result){
-			if(callback){callback("error")}
-		}
-	})
 }
 
 /**
@@ -326,41 +310,6 @@ function magnifyingGlassControl() {
 }
 
 /**
- * 图层检索要素
- */
-function searchControl(){
-    if(!config.searchControl) return
-    var geojsonOpts = {
-        pointToLayer: function(feature, latlng) {
-            var myIcon = L.icon({
-                iconUrl: 'http://localhost/webgis/images/custom-icon.png',
-                iconSize : [20, 20]
-            })
-            return L.marker(latlng, {
-                icon : myIcon
-            }).bindPopup(feature.properties.amenity+'<br><b>'+feature.properties.name+'</b>')
-        }
-    }
-    var poiLayers = L.layerGroup([
-        L.geoJson(bar, geojsonOpts),
-        L.geoJson(pharmacy, geojsonOpts),
-        L.geoJson(restaurant, geojsonOpts)
-    ])
-    var searchCon = L.control.search({
-        layer: poiLayers,
-        initial: false,
-        position : config.searchPosition,
-        propertyName: 'name',
-        buildTip: function(text, val) {
-            var type = val.layer.feature.properties.amenity
-            return '<a href="#" class="' + type  +'">' + text + '<b>' + type + '</b></a>'
-        }
-    })
-    searchCon.options.propertyName = "amenity"
-    searchCon.addTo(map)
-}
-
-/**
  * 图层管理
  */
 function layersListControl(){
@@ -437,11 +386,6 @@ function initMenu(results) {
  * 菜单点击事件
  */
 function menuClick(menuId){
-    // L.control.window("map",{
-	// 	visible : true,
-	// 	title : "业务信息",
-	// 	content : "<button type='button' class='btn btn-primary'>Primary</button>"
-	// })
     switch(menuId){
         case 1 ://经纬度定位
             var html = ""
@@ -457,17 +401,13 @@ function menuClick(menuId){
             break
         case 2 :
 
-        break
-        case 3 :
-
-        break
+            break
+        case 3 ://数据查询
+            initSearchControl()
+            break
         case 4 ://聚合
             var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
-            for(var i = 0 ; i < config.businessData.length ; i ++){
-                if(config.businessData[i].type == "point"){
-                    html += '<option value="' + config.businessData[i].name + '">' + config.businessData[i].name + '</option>'
-                }
-            }
+            html = getOptionsContent(html)
             html += '</select>'
             html += '<div href="#" id="size">Cluster size: <input type="range" value="160" min="35" max="500" step="1" id="sizeInput"/><span id="currentSize">160</span></div>'
             html += '<button type="button" class="btn btn-primary" onclick="PruneClusterLayer()">聚合</button>'
@@ -483,14 +423,10 @@ function menuClick(menuId){
             }
             document.getElementById('sizeInput').onchange = updateSize
             document.getElementById('sizeInput').oninput = updateSize
-        break
-        case 5:
+            break
+        case 5://热力图
             var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
-            for(var i = 0 ; i < config.businessData.length ; i ++){
-                if(config.businessData[i].type == "point"){
-                    html += '<option value="' + config.businessData[i].name + '">' + config.businessData[i].name + '</option>'
-                }
-            }
+            html = getOptionsContent(html)
             html += '</select>'
             html += '<button type="button" class="btn btn-primary" onclick="HeatLayer()">分析</button>'
             html += '<button type="button" class="btn btn-primary" onclick="clearHeatLayer()" style="margin-left: 35px;">清除</button>'
@@ -499,18 +435,18 @@ function menuClick(menuId){
                 title : "热力分析",
                 content : html
             })
-        break
-        case 6 :
-
-        break
+            break
+        case 6 ://标注
+            initDrawToolbar()
+            break
         case 7 :
 
-        break
+            break
         case 8:
 
-        break
+            break
         default:
-        break
+            break
     }
 }
 
@@ -527,7 +463,8 @@ function centerAndZoom(x,y,zoom){
         var jd = $("#jd")[0].value
         var wd = $("#wd")[0].value
         var zoom = $("#zoom")[0].value
-        map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+        if(jd && wd && zoom) map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+        else alert("请输入正确的经纬度及缩放比例")
     }
 }
 
@@ -535,7 +472,8 @@ function centerAndZoom(x,y,zoom){
  * 加载业务数据
  */
 function getBusinessData(){
-    var overlayMaps = {}
+    var overlayMaps = {"标绘图层" : drawnItems}
+    poiLayers = L.layerGroup()
     for(var i = 0 ; i < config.businessData.length ; i ++){
         var geojsonOpts = {
             pointToLayer : function(feature, latlng) {
@@ -544,26 +482,16 @@ function getBusinessData(){
                     iconSize : config.businessData[i].iconSize,
                     popupAnchor : config.businessData[i].popupAnchor
                 })
-                var d = L.marker(latlng, {
-                    icon : myIcon
-                })
                 return L.marker(latlng, {
                     icon : myIcon
                 }).bindTooltip(feature.properties.typeName+'<br><b>'+feature.properties.name+'</b>')
             }
         }
-        //var src = config.businessData[i].xhrUrl
-        // var str = ""
-        // $.ajaxSettings.async = false
-        // $.get(src,function(data,status){
-        //     debugger
-        //     str =  data
-        // });
-        // $.ajaxSettings.async = true
-        // overlayMaps[config.businessData[i].name] = L.geoJson(str,geojsonOpts)
-        var results = exchangeData(data)
+        var results = exchangeData(syncGetData("",config.businessData[i].xhrUrl),config.businessData[i].name)
+        var layer = L.geoJson(results,geojsonOpts)
         //overlayMaps["<span class='basinessSpan' style='background-image:url(" + config.businessData[i].icon + ")'></span>" + config.businessData[i].name] = L.geoJson(results,geojsonOpts)
-        overlayMaps[config.businessData[i].name] = L.geoJson(results,geojsonOpts)
+        overlayMaps[config.businessData[i].name] = layer
+        poiLayers.addLayer(layer)
     }
     var baseMaps = {}
     for(var i = 0 ; i < basemaps.length ; i ++){

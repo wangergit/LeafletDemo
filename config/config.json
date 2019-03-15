@@ -14,8 +14,8 @@
     "scalePosition" : "bottomleft",
     "panControl" : true,
     "panPosition" : "topleft",
-    "searchControl" : true,
-    "searchPosition" : "topright",
+    "searchControl" : false,
+    "searchPosition" : "topleft",
     "fullscreenControl" : true,
     "fullscreenPosition" : "topright",
     "zoomControl" : true,
@@ -71,14 +71,6 @@
         "menuId" : 1,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
-        "ID":"a0458557-9eec-40c5-a497-404cd86d2e94",
-        "functionID":"74043E288A0840E5AD0008C748B18C66",
-        "img":"icon_xingquaihao02.png",
-        "name":"兴趣点",
-        "px":2,
-        "menuId" : 2,
-        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
-    },{
         "ID":"ba5b7010-52e9-47b4-b92e-55205f2fa3e0",
         "functionID":"74043E288A0840E5AD0008C748B18C00",
         "img":"icon_dimingdizhi02.png",
@@ -95,10 +87,18 @@
         "menuId" : 4,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
+        "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
+        "functionID":"04189da7-5d99-451f-bbdf-92e6df2da468",
+        "img":"icon_shishifenxi02.png",
+        "name":"热力分析",
+        "px":9,
+        "menuId" : 5,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
         "ID":"0b90a502-22f2-43c1-8664-4b13e2a04376",
         "functionID":"74043E288A0840E5AD0008C748B18CF8",
         "img":"icon_tongjifenxi02.png",
-        "name":"自定义标注",
+        "name":"标注",
         "px":6,
         "menuId" : 6,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
@@ -125,6 +125,14 @@
         "name":"热力分析",
         "px":9,
         "menuId" : 5,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
+        "ID":"a0458557-9eec-40c5-a497-404cd86d2e94",
+        "functionID":"74043E288A0840E5AD0008C748B18C66",
+        "img":"icon_xingquaihao02.png",
+        "name":"兴趣点",
+        "px":2,
+        "menuId" : 2,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     }]
 }

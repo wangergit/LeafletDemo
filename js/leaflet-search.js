@@ -81,9 +81,9 @@ L.Control.Search = L.Control.extend({
 		collapsed: true,				//collapse search control at startup
 		autoCollapse: false,			//collapse search control after submit(on button or on tips if enabled tipAutoSubmit)
 		autoCollapseTime: 1200,			//delay for autoclosing alert and collapse after blur
-		textErr: 'Location not found',	//error message
-		textCancel: 'Cancel',		    //title in cancel button		
-		textPlaceholder: 'Search...',   //placeholder value			
+		textErr: '未检索到数据',	//error message
+		textCancel: '取消',		    //title in cancel button		
+		textPlaceholder: '请输入关键字...',   //placeholder value			
 		hideMarkerOnCollapse: false,    //remove circle and marker on search control collapsed		
 		position: 'topleft',		
 		marker: {						//custom L.Marker or false for hide
@@ -164,7 +164,6 @@ L.Control.Search = L.Control.extend({
 		return this._container;
 	},
 	addTo: function (map) {
-
 		if(this.options.container) {
 			this._container = this.onAdd(map);
 			this._wrapper = L.DomUtil.get(this.options.container);
@@ -341,7 +340,7 @@ L.Control.Search = L.Control.extend({
 	_createButton: function (title, className) {
 		var button = L.DomUtil.create('a', className, this._container);
 		button.href = '#';
-		button.title = title;
+		button.title = "搜索";
 
 		L.DomEvent
 			.on(button, 'click', L.DomEvent.stop, this)
