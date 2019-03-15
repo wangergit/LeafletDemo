@@ -44,7 +44,7 @@
             "xhrUrl" : "http://localhost:6888/transport/riskregister/list.do?state=0&page=1&limit=1000&ssoid=A417A5DD1BEA5F6054DCA0A8812E0D153C86710CC2F1A70A02CC1F8BD60AEF44AD6A88B4FA37833DB620CD78F5E810A0947FAE8A4531C012",
             "clickUrl" : "",
             "icon" : "images/marker-icon.png",
-            "iconSize" : [25,41],
+            "iconSize" : [12,20],
             "visible" : true,
             "popupAnchor" : [0,0],
             "type" : "point"

@@ -1,4 +1,4 @@
-﻿//全局变量
+//全局变量
 var map = null
 var basemaps = [] //底图
 var osm 
@@ -46,7 +46,7 @@ function initMap(data){
     }
     //书签
     if (!map.restoreView()) {
-        map.setView(config.center, config.zoom)
+        map.setView([config.center], config.zoom)
     }
     attributionControl()
     zoomControl()
@@ -57,7 +57,7 @@ function initMap(data){
     mousePositioControl()
     printerControl()
     magnifyingGlassControl()
-    //searchControl()
+    searchControl()
     //layersListControl()
     getBusinessData()
     miniMapControl()
@@ -346,7 +346,7 @@ function searchControl(){
         L.geoJson(pharmacy, geojsonOpts),
         L.geoJson(restaurant, geojsonOpts)
     ])
-    L.control.search({
+    var searchCon = L.control.search({
         layer: poiLayers,
         initial: false,
         position : config.searchPosition,
@@ -355,7 +355,9 @@ function searchControl(){
             var type = val.layer.feature.properties.amenity
             return '<a href="#" class="' + type  +'">' + text + '<b>' + type + '</b></a>'
         }
-    }).addTo(map)
+    })
+    searchCon.options.propertyName = "amenity"
+    searchCon.addTo(map)
 }
 
 /**
@@ -513,16 +515,20 @@ function menuClick(menuId){
 }
 
 /**
- * 
+ * 缩放到坐标
  * @param {*} x 
  * @param {*} y 
  * @param {*} zoom 
  */
 function centerAndZoom(x,y,zoom){
-    var jd = $("#jd")[0].value
-    var wd = $("#wd")[0].value
-    var zoom = $("#zoom")[0].value
-    map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+    if(x && y && typeof(zoom) == "number"){
+        map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+    }else{
+        var jd = $("#jd")[0].value
+        var wd = $("#wd")[0].value
+        var zoom = $("#zoom")[0].value
+        map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+    }
 }
 
 /**
