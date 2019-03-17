@@ -67,39 +67,27 @@
         "functionID":"2e0076ec-cfc6-4001-bfd4-a6917ee125c5",
         "img":"icon_ziyuanmulu02.png",
         "name":"定位",
-        "px":1,
         "menuId" : 1,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
+        "ID":"a0458557-9eec-40c5-a497-404cd86d2e94",
+        "functionID":"74043E288A0840E5AD0008C748B18C66",
+        "img":"icon_xingquaihao02.png",
+        "name":"地名查询",
+        "menuId" : 2,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"ba5b7010-52e9-47b4-b92e-55205f2fa3e0",
         "functionID":"74043E288A0840E5AD0008C748B18C00",
         "img":"icon_dimingdizhi02.png",
         "name":"数据查询",
-        "px":3,
         "menuId" : 3,
-        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
-    },{
-        "ID":"383da6c1-66d6-4fc1-93fa-674a614b997e",
-        "functionID":"5b7426b5-7edd-4849-903a-7ae4ae193d85",
-        "img":"icon_ditusousuo02.png",
-        "name":"数据聚合",
-        "px":4,
-        "menuId" : 4,
-        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
-    },{
-        "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
-        "functionID":"04189da7-5d99-451f-bbdf-92e6df2da468",
-        "img":"icon_shishifenxi02.png",
-        "name":"热力分析",
-        "px":9,
-        "menuId" : 5,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"0b90a502-22f2-43c1-8664-4b13e2a04376",
         "functionID":"74043E288A0840E5AD0008C748B18CF8",
         "img":"icon_tongjifenxi02.png",
         "name":"标注",
-        "px":6,
         "menuId" : 6,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
@@ -107,32 +95,35 @@
         "functionID":"74043E288A0840E5AD0008C748B18CEE",
         "img":"icon_huanchongfenxi02.png",
         "name":"缓冲区分析",
-        "px":7,
         "menuId" : 7,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
-        "ID":"7d8f6e60-d61a-4f87-a326-0757652dcbd8",
-        "functionID":"74043E288A0840E5AD0008C748B18C78",
-        "img":"icon_gerenzhuanti02.png",
-        "name":"自定义分析",
-        "px":8,
-        "menuId" : 8,
+        "ID":"383da6c1-66d6-4fc1-93fa-674a614b997e",
+        "functionID":"5b7426b5-7edd-4849-903a-7ae4ae193d85",
+        "img":"icon_ditusousuo02.png",
+        "name":"数据聚合",
+        "menuId" : 4,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
         "functionID":"04189da7-5d99-451f-bbdf-92e6df2da468",
         "img":"icon_shishifenxi02.png",
         "name":"热力分析",
-        "px":9,
         "menuId" : 5,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
-        "ID":"a0458557-9eec-40c5-a497-404cd86d2e94",
-        "functionID":"74043E288A0840E5AD0008C748B18C66",
-        "img":"icon_xingquaihao02.png",
-        "name":"兴趣点",
-        "px":2,
-        "menuId" : 2,
+        "ID":"7d8f6e60-d61a-4f87-a326-0757652dcbd8",
+        "functionID":"74043E288A0840E5AD0008C748B18C78",
+        "img":"icon_gerenzhuanti02.png",
+        "name":"echarts",
+        "menuId" : 8,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
+        "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
+        "functionID":"04189da7-5d99-451f-bbdf-92e6df2da468",
+        "img":"icon_shishifenxi02.png",
+        "name":"网格分析",
+        "menuId" : 9,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     }]
 }

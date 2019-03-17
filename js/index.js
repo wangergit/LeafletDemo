@@ -12,6 +12,11 @@ var drawnItems
 var drawTool
 var poiLayers
 var searchControl
+var superHeatMapLayer 
+var liveRenderer 
+var liveDataSet
+var liveLayerOption
+
 
 /**
  * 初始化地图组件
@@ -399,7 +404,7 @@ function menuClick(menuId){
                 content : html
             })
             break
-        case 2 :
+        case 2 ://地名查询
 
             break
         case 3 ://数据查询
@@ -439,11 +444,14 @@ function menuClick(menuId){
         case 6 ://标注
             initDrawToolbar()
             break
-        case 7 :
+        case 7 ://缓冲区分析
 
             break
-        case 8:
-
+        case 8://Echarts图表
+            initEchartsLayer()  
+            break
+        case 9://网格分析
+            initGridLayer()  
             break
         default:
             break
