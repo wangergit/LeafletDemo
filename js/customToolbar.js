@@ -91,12 +91,13 @@ function destoryDrawToolbar(){
  * 图层检索要素
  */
 function initSearchControl(){
+    if(placeSearchControl) placeSearchControl._container.style.display = "none"
     if(searchControl){
-        if($(".leaflet-control-search")[0].style.display == "block" || !$(".leaflet-control-search")[0].style.display){
-            $(".leaflet-control-search")[0].style.display = "none"
+        if(searchControl._container.style.display == "block" || !searchControl._container.style.display){
+            searchControl._container.style.display = "none"
         }else{
-            $(".leaflet-control-search")[0].style.display = "block"
-            searchControl.expand()
+            searchControl._container.style.display = "block"
+            //searchControl._container.style.zIndex = 99999
         }
         return
     }
@@ -112,5 +113,35 @@ function initSearchControl(){
     })
     //searchControl.options.propertyName = "name"
     searchControl.addTo(map)
-    searchControl.expand()
+}
+
+/**
+ * 地名检索要素
+ */
+function initPlaceSearchControl(){
+    if(searchControl) searchControl._container.style.display = "none"
+    if(placeSearchControl){
+        if(placeSearchControl._container.style.display == "block" || !placeSearchControl._container.style.display){
+            placeSearchControl._container.style.display = "none"
+        }else{
+            placeSearchControl._container.style.display = "block"
+            placeSearchControl._container.style.zIndex = 99999
+        }
+        return
+    }
+    var layer = L.geoJson(chinaGeojson,{})
+    var placeLayers = L.layerGroup()
+    placeLayers.addLayer(layer)
+    placeSearchControl = L.control.search({
+        layer: placeLayers,
+        initial: false,
+        position : config.searchPosition,
+        propertyName: 'name',
+        layerSymbol : true,
+        buildTip : function(text, val) {
+            //var type = val.layer.feature.properties.amenity
+            return '<a href="#">' + text + '</a>'
+        }
+    })
+    placeSearchControl.addTo(map)
 }

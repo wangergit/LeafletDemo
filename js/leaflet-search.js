@@ -78,14 +78,16 @@ L.Control.Search = L.Control.extend({
 		tipAutoSubmit: true,			//auto map panTo when click on tooltip
 		firstTipSubmit: false,			//auto select first result con enter click
 		autoResize: true,				//autoresize on input change
-		collapsed: true,				//collapse search control at startup
+		collapsed: false,				//collapse search control at startup
 		autoCollapse: false,			//collapse search control after submit(on button or on tips if enabled tipAutoSubmit)
 		autoCollapseTime: 1200,			//delay for autoclosing alert and collapse after blur
 		textErr: '未检索到数据',	//error message
 		textCancel: '取消',		    //title in cancel button		
 		textPlaceholder: '请输入关键字...',   //placeholder value			
 		hideMarkerOnCollapse: false,    //remove circle and marker on search control collapsed		
-		position: 'topleft',		
+		position: 'topleft',
+		layerSymbol : false,	
+		geoLayer : null,	
 		marker: {						//custom L.Marker or false for hide
 			icon: false,				//custom L.Icon for maker location or false for hide
 			animate: true,				//animate a circle over location found
@@ -120,6 +122,10 @@ L.Control.Search = L.Control.extend({
 
 	initialize: function(options) {
 		L.Util.setOptions(this, options || {});
+		this.layerSymbol = this.options.layerSymbol ? this.options.layerSymbol : false;		
+		if(this.layerSymbol){
+			this.geoLayer = L.geoJson()
+		}
 		this._inputMinSize = this.options.textPlaceholder ? this.options.textPlaceholder.length : 10;
 		this._layer = this.options.layer || new L.LayerGroup();
 		this._filterData = this.options.filterData || this._defaultFilterData;
@@ -222,6 +228,8 @@ L.Control.Search = L.Control.extend({
 	},
 		
 	cancel: function() {
+		if(this.geoLayer)  this.geoLayer.clearLayers()
+		this._map.removeLayer(this._markerSearch);
 		this._input.value = '';
 		this._handleKeypress({ keyCode: 8 });//simulate backspace keypress
 		this._input.size = this._inputMinSize;
@@ -238,7 +246,7 @@ L.Control.Search = L.Control.extend({
 		L.DomUtil.addClass(this._container, 'search-exp');
 		if ( toggle !== false ) {
 			this._input.focus();
-			this._map.on('dragstart click', this.collapse, this);
+			//this._map.on('dragstart click', this.collapse, this);
 		}
 		this.fire('search:expanded');
 		return this;	
@@ -693,11 +701,11 @@ L.Control.Search = L.Control.extend({
 			case 40://Down
 				this._handleArrowSelect(1);
 			break;
-			case  8://Backspace
-			case 45://Insert
-			case 46://Delete
-				this._autoTypeTmp = false;//disable temporarily autoType
-			break;
+			// case  8://Backspace
+			// case 45://Insert
+			//case 46://Delete
+				//this._autoTypeTmp = false;//disable temporarily autoType
+			//break;
 			case 37://Left
 			case 39://Right
 			case 16://Shift
@@ -887,11 +895,15 @@ L.Control.Search = L.Control.extend({
 		var self = this;
 
 		self._map.once('moveend zoomend', function(e) {
-
-			if(self._markerSearch) {
+			if(self.layerSymbol){
+				self.geoLayer.clearLayers()
+				self.geoLayer.addData(latlng.layer.feature).bindPopup('<b>'+latlng.layer.feature.properties.name+'</b>')
+				if(!self._map.hasLayer(self.geoLayer)){
+					self._map.addLayer(self.geoLayer)
+				}
+			}else if(self._markerSearch) {
 				self._markerSearch.addTo(self._map).setLatLng(latlng);
 			}
-			
 		});
 
 		self._moveToLocation(latlng, title, self._map);

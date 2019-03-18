@@ -12,6 +12,7 @@ var drawnItems
 var drawTool
 var poiLayers
 var searchControl
+var placeSearchControl
 var superHeatMapLayer 
 var liveRenderer 
 var liveDataSet
@@ -75,6 +76,7 @@ function initMap(data){
     initMenu(config.menuList)
 }
 
+//请求配置文件
 function getConfig (){
     sendAjax("config/config.json","GET",initMap)
 }
@@ -405,7 +407,7 @@ function menuClick(menuId){
             })
             break
         case 2 ://地名查询
-
+            initPlaceSearchControl()
             break
         case 3 ://数据查询
             initSearchControl()
@@ -480,7 +482,7 @@ function centerAndZoom(x,y,zoom){
  * 加载业务数据
  */
 function getBusinessData(){
-    var overlayMaps = {"标绘图层" : drawnItems}
+    var overlayMaps = {"标注图层" : drawnItems}
     poiLayers = L.layerGroup()
     for(var i = 0 ; i < config.businessData.length ; i ++){
         var geojsonOpts = {
