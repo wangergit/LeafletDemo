@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-	<title>Leaflet</title>
+	<title>WEBGIS</title>
     <meta charset="utf-8" />
 	  <!-- css  -->
     <link rel="stylesheet" href="css/demo.css" />
@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="css/PruneCluster.css" />
     <link rel="stylesheet" href="css/leaflet.draw.css" />
     <link rel="stylesheet" href="css/L.Icon.Pulse.css" />
+    <link rel="stylesheet" href="css/myPagination.css" />
+    <link rel="stylesheet" href="css/easy-button.css" />
 	
 	  <!--  js  -->
     <script src="js/geojson.js"></script>
@@ -32,7 +34,7 @@
     <script src="js/jquery.js"></script>
     <script src="js/echarts.min.js"></script>
     <script src="js/jquery.tinycarousel.min.js"></script>
-    <script src="js/L.Control.Pan.js" ></script>    
+    <script src="js/L.Control.Pan.js" ></script>  
     <script src="js/leaflet-tilejson.js"></script>
     <script src="js/L.Control.MousePosition.js"></script>
     <script src="js/Control.MiniMap.js"></script>
@@ -83,7 +85,8 @@
     <script src="js/Control.Draw.js"></script>
     <script src="js/edit/handler/Edit.Poly.js"></script>
     <script src="js/edit/handler/Edit.SimpleShape.js"></script>
-    <script src="js/edit/handler/Edit.Marker.js"></script>
+    <script src="js/edit/handler/Edit.Marker.js"></script>  
+    <script src="js/easy-button.js" ></script>   
     <!-- <script src="js/edit/handler/Edit.CircleMarker.js"></script>
     <script src="js/edit/handler/Edit.Circle.js"></script> -->
     <script src="js/edit/handler/Edit.Rectangle.js"></script>
@@ -105,12 +108,21 @@
     <script src="js/GridLayer/MapVLayer.js"></script>
     <!-- Spatial analysis -->
     <script src="js/turf.min.js"></script>
+    <!-- 分页 -->
+    <script src="js/myPagination.js"></script>
 
   </head>
   <body>
     <div id="map"></div>
     <div id="videoDock">
       <div id="dockContainer" class="dock-container"></div>
+    </div>
+    <div id="pageContainer" class="pageContainer" style="display: none;">
+      <h4>查询结果展示</h4>
+      <div class="infoContainer" id="infoContainer">
+
+      </div>
+      <div id="paging" class="paging"></div>
     </div>
     <script src="js/index.js"></script>
   </body>

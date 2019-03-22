@@ -1,22 +1,27 @@
 //全局变量
 var map = null
 var basemaps = [] //底图
-var osm 
-var tiles
-var leafletView = null
-var heatMapLayer = null
+var osm //openStreetMap
+var tiles //tileLayer
+var leafletView = null //聚合图
+var heatMapLayer = null //热力图
 var windowInterval = null
-var printer = null
+var printer = null 
 var config = {}
-var drawnItems
-var drawTool
-var poiLayers
-var searchControl
-var placeSearchControl
-var superHeatMapLayer 
-var liveRenderer 
-var liveDataSet
-var liveLayerOption
+var drawnItems //标注要素图层
+var drawTool //绘制工具
+var poiLayers  //
+var searchControl //业务数据搜索的工具
+var placeSearchControl //地名数据搜索的工具
+var superHeatMapLayer //
+var liveRenderer //
+var liveDataSet //
+var liveLayerOption //
+var bufferState = false //缓冲区分析的状态值
+var bufferFeature //当前缓冲分析的要素
+var pagingData //分页数据
+var bufferGeo //缓冲后的geojson
+var plotLayer
 
 
 /**
@@ -36,18 +41,30 @@ function initMap(data){
     })
     for(var i = 0 ; i < config.tiledLayers.length ; i ++){
         if(config.tiledLayers[i].label.indexOf("街道") > -1){
-            tiles = L.tileLayer(config.tiledLayers[i].path, {
-                visible : config.tiledLayers[i].visible,
-                //errorTileUrl : config.errorTileUrl,
-                label : config.tiledLayers[i].label,
-                maxZoom : config.tiledLayers[i].maxZoom,
-                minZoom : config.tiledLayers[i].minZoom
-            }).addTo(map)
+            if(config.tiledLayers[i].cache){//arcgis切片格式
+                // loadScript("js/L.tileLayer.tileLoad.js",function(){})
+                // tiles = new L.TileLayer.TileLoad(config.tiledLayers[i].path, {
+                //     label : config.tiledLayers[i].label,
+                //     maxZoom : config.tiledLayers[i].maxZoom,
+                //     minZoom : config.tiledLayers[i].minZoom,
+                //     errorTileUrl : config.errorTileUrl,
+                //     continuousWorld: true,
+                //     visible : config.tiledLayers[i].visible
+                // }).addTo(map)
+            }else{
+                tiles = new L.tileLayer(config.tiledLayers[i].path, {
+                    label : config.tiledLayers[i].label,
+                    maxZoom : config.tiledLayers[i].maxZoom,
+                    minZoom : config.tiledLayers[i].minZoom,
+                    errorTileUrl : config.errorTileUrl,
+                    visible : config.tiledLayers[i].visible
+                }).addTo(map)
+            }
             basemaps.push(tiles)
         }else{
             basemaps.push(L.tileLayer(config.tiledLayers[i].path, {
                 visible : config.tiledLayers[i].visible,
-                //errorTileUrl : config.errorTileUrl,
+                errorTileUrl : config.errorTileUrl,
                 label : config.tiledLayers[i].label,
                 maxZoom : config.tiledLayers[i].maxZoom,
                 minZoom : config.tiledLayers[i].minZoom
@@ -55,9 +72,9 @@ function initMap(data){
         }
     }
     //书签
-    if (!map.restoreView()) {
-        map.setView(config.center, config.zoom)
-    }
+    //if (!map.restoreView()) {
+    map.setView(config.center, config.zoom)
+    //}
     drawnItems = L.featureGroup()
     map.addLayer(drawnItems)
     attributionControl()
@@ -74,6 +91,7 @@ function initMap(data){
     miniMapControl()
     basemapsControl()
     initMenu(config.menuList)
+    clearEasyButton()
 }
 
 //请求配置文件
@@ -393,6 +411,7 @@ function initMenu(results) {
  * 菜单点击事件
  */
 function menuClick(menuId){
+    bufferState = false//缓冲区状态恢复
     switch(menuId){
         case 1 ://经纬度定位
             var html = ""
@@ -447,7 +466,23 @@ function menuClick(menuId){
             initDrawToolbar()
             break
         case 7 ://缓冲区分析
-
+            initDrawToolbar(true)
+            bufferState = true
+            var html = '<p id="bufferReminder">请先自绘制要素，然后点击进行缓冲区分析。</p>'
+            html += '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
+            html = getOptionsContent(html)
+            html += '</select>'
+            html += '要素：<input id="bufferItem" type="text" value="" placeholder="请选择要缓冲的要素" class="form-control input-sm" style="width: 190px;display: inline-block;"></br>'
+            html += '半径：<input id="bufferValue" type="text" value="" placeholder="缓冲半径（仅支持数字类型）/米" class="form-control input-sm" style="margin-top: 5px;width: 190px;display: inline-block;margin-bottom: 5px;"></br>'
+            html += '<button type="button" class="btn btn-primary" onclick="bufferTrigger()" style="margin-left: 35px;">缓冲</button>'
+            html += '<button type="button" class="btn btn-primary" onclick="bufferAnalysisTrigger()" style="margin-left: 35px;">分析</button>'
+            html += '<button type="button" class="btn btn-primary" onclick="clearbufferAnalysis()" style="margin-left: 35px;">清除</button>'
+            html += '<div id="pageContainer" class="pageContainer" ><div class="infoContainer" id="infoContainer"></div><div id="paging" class="paging"></div></div>'
+            L.control.window("map",{
+                visible : true,
+                title : "缓冲区分析",
+                content : html
+            })
             break
         case 8://Echarts图表
             initEchartsLayer()  
@@ -468,7 +503,8 @@ function menuClick(menuId){
  */
 function centerAndZoom(x,y,zoom){
     if(x && y && typeof(zoom) == "number"){
-        map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
+        map.setView([parseFloat(y),parseFloat(x)], parseInt(zoom))
+        addPositionMarker(x,y)
     }else{
         var jd = $("#jd")[0].value
         var wd = $("#wd")[0].value
@@ -479,11 +515,29 @@ function centerAndZoom(x,y,zoom){
 }
 
 /**
+ * 添加定位图标
+ * @param {*} x 
+ * @param {*} y 
+ */
+function addPositionMarker(x,y){
+    plotLayer.clearLayers()
+    var myIcon = L.icon({
+        iconUrl: config.positionImg,
+        iconSize : [12, 20]
+    })
+    L.marker(L.latLng(y, x), {
+        icon : myIcon
+    }).addTo(plotLayer)
+}
+
+/**
  * 加载业务数据
  */
 function getBusinessData(){
     var overlayMaps = {"标注图层" : drawnItems}
     poiLayers = L.layerGroup()
+    plotLayer = L.layerGroup()
+    map.addLayer(plotLayer)
     for(var i = 0 ; i < config.businessData.length ; i ++){
         var geojsonOpts = {
             pointToLayer : function(feature, latlng) {
@@ -508,6 +562,45 @@ function getBusinessData(){
         baseMaps[basemaps[i].options.label] = basemaps[i]
     }
     L.control.layers(baseMaps,overlayMaps).addTo(map)
+}
+
+/**
+ * 动态引入js文件
+ * @param {*} url 
+ * @param {*} callback 
+ */
+function loadScript(url, callback) {  
+    var script = document.createElement("script");  
+    script.type = "text/javascript";  
+    if(typeof(callback) != "undefined"){  
+        if (script.readyState) {  
+            script.onreadystatechange = function () {  
+                if (script.readyState == "loaded" || script.readyState == "complete") {  
+                    script.onreadystatechange = null;  
+                    callback();  
+                }  
+            };  
+        } else {  
+            script.onload = function () {  
+                callback();  
+            };  
+        }  
+    }  
+    script.src = url;  
+    document.body.appendChild(script);  
+}
+
+/**
+ * 常用业务操作清除功能按钮
+ */
+function clearEasyButton(){
+    config.clearEasyButton ? L.easyButton("fa-be", function (e) {
+        if(bufferGeo){
+            map.removeLayer(bufferGeo)
+            bufferGeo = null
+        }
+        if(plotLayer) plotLayer.clearLayers()
+     }, '清除').addTo(map) : null
 }
 
 getConfig()

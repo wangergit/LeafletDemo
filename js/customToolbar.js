@@ -1,13 +1,13 @@
 /**
  * 初始化标绘组件
  */
-function initDrawToolbar(){
+function initDrawToolbar(bool){
     if(drawTool) {
-        destoryDrawToolbar()
+        if(!bool) destoryDrawToolbar()
         return
     }
     drawnItems.on("click",function(layer){
-        console.log(layer.layer.toGeoJSON())
+        drawItemTrigger(layer.layer)
     })
     drawTool = new L.Control.Draw({
         edit: {
@@ -76,6 +76,81 @@ function initDrawToolbar(){
 }
 
 /**
+ * 绘制图层点击事件触发函数
+ * @param {*} feature 
+ */
+function drawItemTrigger(feature){
+    if(bufferState){//缓冲区分析
+        if($("#bufferItem")[0]){
+            $("#bufferItem")[0].value = JSON.stringify(feature.toGeoJSON())
+        }
+    }else {//保存要素
+
+    }
+}
+
+/**
+ * 缓冲区
+ */
+function bufferTrigger(){
+    var geojson
+    var radius 
+    if($("#bufferItem")[0] && $("#bufferItem")[0].value){
+        geojson = JSON.parse($("#bufferItem")[0].value)
+    }else{
+        alert("请先选择要缓冲的要素")
+        return
+    }
+    if($("#bufferValue")[0] && $("#bufferValue")[0].value){
+        var value = parseFloat($("#bufferValue")[0].value)
+        if(!isNaN(value)){
+            radius = value
+        } else{
+            alert("请输入正确的缓冲半径")
+            return
+        }
+    }else{
+        alert("请输入缓冲半径")
+        return
+    }
+    bufferFeature = turf.buffer(geojson, radius, {
+        units: 'meters'
+    })
+    if(bufferGeo){
+        map.removeLayer(bufferGeo)
+        bufferGeo = null
+    }
+    bufferGeo = L.geoJSON(bufferFeature, {
+        style: function() {
+            return {
+                color: 'red'
+            }
+        }
+    }).addTo(map)
+}
+
+/**
+ * 缓冲区分析
+ */
+function bufferAnalysisTrigger(){
+    var layerName = $("#businessSelect")[0].value 
+    var result = syncGetData(layerName)
+    var results = []
+    for(var i = 0 ; i < result.data.length ; i ++){
+        var pt = turf.point([result.data[i].longtitude,result.data[i].latitude])
+        if(turf.booleanPointInPolygon(pt, bufferFeature)){
+            results.push(result.data[i])
+        }  
+    }
+    if(results.length > 0){
+        pagingControl(results)
+    }else{
+        $("#paging")[0] &&　($("#paging")[0].innerHTML = "")
+        $("#infoContainer")[0] &&　($("#infoContainer")[0].innerHTML = "范围内无查询结果")
+    }
+}
+
+/**
  * 销毁标绘组件
  */
 function destoryDrawToolbar(){
@@ -104,6 +179,7 @@ function initSearchControl(){
     searchControl = L.control.search({
         layer: poiLayers,
         initial: false,
+        textPlaceholder : "请输入关键字...",
         position : config.searchPosition,
         propertyName: 'name',
         buildTip: function(text, val) {
@@ -134,6 +210,7 @@ function initPlaceSearchControl(){
     placeLayers.addLayer(layer)
     placeSearchControl = L.control.search({
         layer: placeLayers,
+        textPlaceholder : "请输入地名关键字...",
         initial: false,
         position : config.searchPosition,
         propertyName: 'name',

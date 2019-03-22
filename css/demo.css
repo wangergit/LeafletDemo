@@ -51,5 +51,42 @@ html, body, #map {
     width: 20px;
     position: absolute;
 }
-
+.pageContainer{
+    width: 100%;
+    height: inherit;
+    z-index: 99999999;
+    position: relative;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 5px;
+}
+.infoContainer{
+    width:initial;
+    height: auto;
+}
+.listStyle{
+    float: left;
+    width: max-content;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+}
+.listTable{
+    width: 100%;
+    height:auto;
+}
+.listTable th{
+    border: 1px solid #dddddd;
+    cursor: default;
+}
+.listTable tr{
+    height: 25px;
+    cursor: pointer;
+}
+.listTable tr:hover{
+    color: #0000ffc7;
+}
+.listTable td{
+    border: 1px solid #dddddd;
+}
 

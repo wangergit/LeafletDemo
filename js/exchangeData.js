@@ -539,3 +539,70 @@ function test(){
     }
     console.log(JSON.stringify(gridData))
 }
+
+/**
+ * 分页面板
+ * @param {*} data 
+ */
+function pagingControl(data){
+    pagingData = data
+    $("#paging")[0] &&　($("#paging")[0].innerHTML = "")
+    new Page({
+        id: 'paging',
+        pageTotal: Math.ceil(data.length / 10), //必填,总页数
+        pageAmount: 10,  //每页多少条
+        dataTotal: data.length, //总共多少条数据
+        curPage:1, //初始页码,不填默认为1
+        pageSize: 3, //分页个数,不填默认为5
+        showPageTotalFlag:true, //是否显示数据统计,不填默认不显示
+        showSkipInputFlag:true, //是否支持跳转,不填默认不显示
+        getPage: function (page) {
+            var html = getPageContent(pagingData,page,10)
+            completeTable(html)
+        }
+    })
+    var html = getPageContent(pagingData,1,10)
+    completeTable(html)
+}
+
+function completeTable(html){
+    $("#infoContainer")[0].innerHTML = html
+    for(var i = 1 ; i < $(".listTable tr").length ; i ++){
+        $(".listTable tr")[i].onclick = function(e){
+            var param = pagingData[parseInt(e.currentTarget.attributes.index.value)]
+            centerAndZoom(param.longtitude,param.latitude,10)
+        }
+    }
+}
+
+function clearbufferAnalysis(){
+    $("#infoContainer")[0].innerHTML = ""
+    $("#paging")[0].innerHTML = ""
+    $("#bufferItem")[0].value = ""
+    $("#bufferValue")[0].value = ""
+    pagingData = null
+    if(bufferGeo){
+        map.removeLayer(bufferGeo)
+        bufferGeo = null
+    }
+    if(plotLayer) plotLayer.clearLayers()
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} index 
+ * @param {*} pageAmount 
+ */
+function getPageContent(data,index,pageAmount){
+    var html = "<table class='listTable'><tr><th>序号</th><th>名称</th></tr>"
+    // for(var i = (index - 1) * pageAmount  ; i < index * pageAmount ; i ++){
+    //     if(!data[i]) break
+    //     html += "<div index='" + i + "' class='listStyle'><span class='listSpan'>" + (i + 1) + "</span>" + data[i].name + "</div>"
+    // }
+    for(var i = (index - 1) * pageAmount  ; i < index * pageAmount ; i ++){
+        if(!data[i]) break
+        html += '<tr index="' + i + '"><td>' + (i + 1) + '</td><td>' + data[i].name + '</td></tr>'
+    }
+    return html + "</table>"
+}

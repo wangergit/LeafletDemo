@@ -1,14 +1,15 @@
 {
     "host" : "localhost",
-    "errorTileUrl" : "http://localhost/webgis/images/layers-2x.png",
+    "errorTileUrl" : "http://39.105.39.37/leafletDemo/images/图片未找到.png",
+    "positionImg" : "http://39.105.39.37/leafletDemo/images/fav-icon.png",
     "attribute" : {
 		"name" : "2018@ienc",
 		"title" : "北京恒济引航科技有限公司",
 		"link" : "http://www.ienc.cn"
     },
-    "center" : [50.0, 10.0],
-    "zoom" : 7,
-    "attributionControl"  : true,
+    "center" : [39.917, 116.398],
+    "zoom" : 10,
+    "attributionControl"  : false,
     "basemapsControl" : false ,
     "scaleControl" : true,
     "scalePosition" : "bottomleft",
@@ -24,8 +25,9 @@
         "countryLevel" : 2,
         "provinceLevel" : 7,
         "cityLevel" : 12 ,
-        "streetLevel" : 19
+        "streetLevel" : 15
     },
+    "clearEasyButton" : true,
     "navbarControl" : true,
     "navbarPosition" : "topleft",
     "mousePositionControl" : true,
@@ -54,11 +56,14 @@
         {
             "name" : "ESRI街道",
             "attribute" : "",
-            "img" : "http://localhost/LeafletDemo/LeafletDemo/images/0.png",
-            "path" : "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png",
+            "img" : "http://39.105.39.37/LeafletDemo/LeafletDemo/images/0.png",
+            "path3" : "http://39.105.39.37/layerCache",
+            "path" : "http://39.105.39.37/esriTiles/tiles/{z}/{x}/{y}.png",
+            "path1" : "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png",
+            "cache" : false,
             "visible" : false,
             "label" : "ESRI街道",
-            "maxZoom" : 20,
+            "maxZoom" : 17,
 		    "minZoom" : 0
         }
     ],
