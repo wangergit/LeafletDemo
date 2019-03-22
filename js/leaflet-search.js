@@ -123,9 +123,7 @@ L.Control.Search = L.Control.extend({
 	initialize: function(options) {
 		L.Util.setOptions(this, options || {});
 		this.layerSymbol = this.options.layerSymbol ? this.options.layerSymbol : false;		
-		if(this.layerSymbol){
-			this.geoLayer = L.geoJson()
-		}
+		this.geoLayer = this.options.geoLayer;
 		this._inputMinSize = this.options.textPlaceholder ? this.options.textPlaceholder.length : 10;
 		this._layer = this.options.layer || new L.LayerGroup();
 		this._filterData = this.options.filterData || this._defaultFilterData;
@@ -895,14 +893,15 @@ L.Control.Search = L.Control.extend({
 		var self = this;
 
 		self._map.once('moveend zoomend', function(e) {
+			self.geoLayer.clearLayers()
 			if(self.layerSymbol){
-				self.geoLayer.clearLayers()
-				self.geoLayer.addData(latlng.layer.feature).bindPopup('<b>'+latlng.layer.feature.properties.name+'</b>')
-				if(!self._map.hasLayer(self.geoLayer)){
-					self._map.addLayer(self.geoLayer)
-				}
+				latlng.layer.addTo(self.geoLayer).bindPopup('<b>'+latlng.layer.feature.properties.name+'</b>')
+				//self.geoLayer.addData(latlng.layer.feature).bindPopup('<b>'+latlng.layer.feature.properties.name+'</b>')
+				// if(!self._map.hasLayer(self.geoLayer)){
+				// 	self._map.addLayer(self.geoLayer)
+				// }
 			}else if(self._markerSearch) {
-				self._markerSearch.addTo(self._map).setLatLng(latlng);
+				self._markerSearch.addTo(plotLayer).setLatLng(latlng);
 			}
 		});
 

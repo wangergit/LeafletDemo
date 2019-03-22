@@ -21,7 +21,8 @@ var bufferState = false //缓冲区分析的状态值
 var bufferFeature //当前缓冲分析的要素
 var pagingData //分页数据
 var bufferGeo //缓冲后的geojson
-var plotLayer
+var plotLayer //常用标绘图层   小图标啥的
+var realtimeWidget //实时数据展示控件
 
 
 /**
@@ -490,6 +491,9 @@ function menuClick(menuId){
         case 9://网格分析
             initGridLayer()  
             break
+        case 10://实时数据展示
+            initRealtimeWidget()  
+            break
         default:
             break
     }
@@ -570,35 +574,40 @@ function getBusinessData(){
  * @param {*} callback 
  */
 function loadScript(url, callback) {  
-    var script = document.createElement("script");  
-    script.type = "text/javascript";  
+    var script = document.createElement("script") 
+    script.type = "text/javascript"
     if(typeof(callback) != "undefined"){  
         if (script.readyState) {  
             script.onreadystatechange = function () {  
                 if (script.readyState == "loaded" || script.readyState == "complete") {  
-                    script.onreadystatechange = null;  
-                    callback();  
+                    script.onreadystatechange = null 
+                    callback()
                 }  
-            };  
+            } 
         } else {  
             script.onload = function () {  
                 callback();  
-            };  
+            }
         }  
-    }  
-    script.src = url;  
-    document.body.appendChild(script);  
+    } 
+    script.src = url
+    document.body.appendChild(script) 
 }
 
 /**
  * 常用业务操作清除功能按钮
  */
 function clearEasyButton(){
-    config.clearEasyButton ? L.easyButton("fa-be", function (e) {
+    config.menuButton ? L.easyButton("menuBtn", function (e) {
+        if($("#videoDock")[0].style.display == "block" || !$("#videoDock")[0].style.display) {$("#videoDock")[0].style.display = "none"}
+        else  {$("#videoDock")[0].style.display = "block"}
+     }, '工具栏').addTo(map) : null
+    config.clearEasyButton ? L.easyButton("clearBtn", function (e) {
         if(bufferGeo){
             map.removeLayer(bufferGeo)
             bufferGeo = null
         }
+        if(drawnItems) drawnItems.clearLayers()
         if(plotLayer) plotLayer.clearLayers()
      }, '清除').addTo(map) : null
 }

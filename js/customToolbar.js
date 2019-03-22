@@ -179,6 +179,7 @@ function initSearchControl(){
     searchControl = L.control.search({
         layer: poiLayers,
         initial: false,
+        geoLayer : plotLayer,
         textPlaceholder : "请输入关键字...",
         position : config.searchPosition,
         propertyName: 'name',
@@ -210,6 +211,7 @@ function initPlaceSearchControl(){
     placeLayers.addLayer(layer)
     placeSearchControl = L.control.search({
         layer: placeLayers,
+        geoLayer : plotLayer,
         textPlaceholder : "请输入地名关键字...",
         initial: false,
         position : config.searchPosition,

@@ -1,7 +1,8 @@
 {
-    "host" : "localhost",
+    "host" : "http://localhost",
     "errorTileUrl" : "http://39.105.39.37/leafletDemo/images/图片未找到.png",
     "positionImg" : "http://39.105.39.37/leafletDemo/images/fav-icon.png",
+    "positionImgSize" : [12,20],
     "attribute" : {
 		"name" : "2018@ienc",
 		"title" : "北京恒济引航科技有限公司",
@@ -28,6 +29,7 @@
         "streetLevel" : 15
     },
     "clearEasyButton" : true,
+    "menuButton" : true,
     "navbarControl" : true,
     "navbarPosition" : "topleft",
     "mousePositionControl" : true,
@@ -92,7 +94,7 @@
         "ID":"0b90a502-22f2-43c1-8664-4b13e2a04376",
         "functionID":"74043E288A0840E5AD0008C748B18CF8",
         "img":"icon_tongjifenxi02.png",
-        "name":"标注",
+        "name":"标绘",
         "menuId" : 6,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
@@ -129,6 +131,13 @@
         "img":"icon_shishifenxi02.png",
         "name":"网格分析",
         "menuId" : 9,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
+        "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9sxsx",
+        "functionID":"04189da7-5d99-451f-bbdf-92e6df2da46ss",
+        "img":"icon_shishifenxi02.png",
+        "name":"实时数据",
+        "menuId" : 10,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     }]
 }
