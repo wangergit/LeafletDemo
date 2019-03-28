@@ -614,4 +614,11 @@ function clearEasyButton(){
      }, '清除').addTo(map) : null
 }
 
-getConfig()
+function resizePage(){
+    var pageSize = windowSize()
+    $("#videoDock")[0].style.top = (pageSize.pageHeight - 100) + "px"
+}
+getConfig()//初始化
+window.onresize = function() {
+    resizePage()
+}
