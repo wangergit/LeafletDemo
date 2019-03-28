@@ -8,6 +8,9 @@ html, body, #map {
     position: absolute;
     margin: 0px;
     padding: 0px;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
 }
 .leaflet-control-navbar{
     margin-top : 235px;

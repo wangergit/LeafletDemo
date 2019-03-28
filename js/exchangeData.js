@@ -659,10 +659,10 @@ function initRealtimeWidget(){
             return 'Wander drone at ' + coordPart(c[1], 'NS') + ', ' + coordPart(c[0], 'EW')
         },
         bindFeaturePopup = function(fId) {
-            realtime.getLayer(fId).bindPopup(popupContent(fId))
+            realtimeWidget.getLayer(fId).bindPopup(popupContent(fId))
         },
         updateFeaturePopup = function(fId) {
-            realtime.getLayer(fId).getPopup().setContent(popupContent(fId))
+            realtimeWidget.getLayer(fId).getPopup().setContent(popupContent(fId))
         }
 
         map.fitBounds(realtimeWidget.getBounds(), {maxZoom: 3})

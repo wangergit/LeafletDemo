@@ -13,7 +13,7 @@ var drawTool //绘制工具
 var poiLayers  //
 var searchControl //业务数据搜索的工具
 var placeSearchControl //地名数据搜索的工具
-var superHeatMapLayer //
+var superHeatMapLayer // 
 var liveRenderer //
 var liveDataSet //
 var liveLayerOption //
@@ -392,6 +392,8 @@ function measureControl(){
  * @param [] results 
  */
 function initMenu(results) {
+    var pageSize = windowSize()
+    $("#videoDock")[0].style.top = (pageSize.pageHeight - 100) + "px"
     if (results == null && results.length == 0) return
     var content = ""
     content += "<div id='slider1'> <a class='buttons prev' href='#'>left</a>  "
@@ -599,8 +601,8 @@ function loadScript(url, callback) {
  */
 function clearEasyButton(){
     config.menuButton ? L.easyButton("menuBtn", function (e) {
-        if($("#videoDock")[0].style.display == "block" || !$("#videoDock")[0].style.display) {$("#videoDock")[0].style.display = "none"}
-        else  {$("#videoDock")[0].style.display = "block"}
+        if($("#videoDock")[0].style.display == "inline-block" || !$("#videoDock")[0].style.display) {$("#videoDock")[0].style.display = "none"}
+        else  {$("#videoDock")[0].style.display = "inline-block"}
      }, '工具栏').addTo(map) : null
     config.clearEasyButton ? L.easyButton("clearBtn", function (e) {
         if(bufferGeo){
