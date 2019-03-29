@@ -616,9 +616,11 @@ function clearEasyButton(){
 
 function resizePage(){
     var pageSize = windowSize()
-    $("#videoDock")[0].style.top = (pageSize.pageHeight - 100) + "px"
+    $("#videoDock")[0] && ($("#videoDock")[0].style.top = (pageSize.windowHeight - 100) + "px")
 }
+
 getConfig()//初始化
+
 window.onresize = function() {
     resizePage()
 }

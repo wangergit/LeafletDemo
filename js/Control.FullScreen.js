@@ -58,27 +58,29 @@ L.Control.FullScreen = L.Control.extend({
 	},
 	
 	toggleFullScreen: function () {
-		var map = this._map;
+		//var map = this._map;
+		var elem = $(".mainDiv")[0]
 		if (this._state) {
 			this._state = false;
 			if (fullScreenApi.supportsFullScreen && !this.options.forcePseudoFullscreen) {
-				fullScreenApi.cancelFullScreen(map._container);
+				fullScreenApi.cancelFullScreen(elem);
 			} else {
-				L.DomUtil.removeClass(map._container, 'leaflet-pseudo-fullscreen');
+				L.DomUtil.removeClass(elem, 'leaflet-pseudo-fullscreen');
 			}
-			map.invalidateSize();
-			map.fire('exitFullscreen');
+			//elem.invalidateSize();
+			//elem.fire('exitFullscreen');
 		}
 		else {
 			this._state = true;
 			if (fullScreenApi.supportsFullScreen && !this.options.forcePseudoFullscreen) {
-				fullScreenApi.requestFullScreen(map._container);
+				fullScreenApi.requestFullScreen(elem);
 			} else {
-				L.DomUtil.addClass(map._container, 'leaflet-pseudo-fullscreen');
+				L.DomUtil.addClass(elem, 'leaflet-pseudo-fullscreen');
 			}
-			map.invalidateSize();
-			map.fire('enterFullscreen');
+			//elem.invalidateSize();
+			//elem.fire('enterFullscreen');
 		}
+		if(resizePage) {resizePage()}
 	},
 	
 	_toggleTitle: function() {
