@@ -41,7 +41,7 @@
       map.once('moveend', function() {this._map.on('moveend', this._updateHistory, this);}, this);
       // Set intial view to home
       map.setView(options.center, options.zoom);
-      container.style.marginTop = "234px"
+      container.style.marginTop = "210px";
       return container;
     },
 

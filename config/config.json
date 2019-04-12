@@ -1,11 +1,11 @@
 {
-    "host" : "http://localhost",
-    "errorTileUrl" : "http://39.105.39.37/leafletDemo/images/图片未找到.png",
-    "positionImg" : "http://39.105.39.37/leafletDemo/images/fav-icon.png",
-    "positionImgSize" : [12,20],
+    "host" : "http://localhost:6888",
+    "errorTileUrl" : "images/noTiled.png",
+    "positionImg" : "images/position.png",
+    "positionImgSize" : [20,20],
     "attribute" : {
 		"name" : "2018@ienc",
-		"title" : "北京恒济引航科技有限公司",
+		"title" : "北京恒济引航科技股份有限公司",
 		"link" : "http://www.ienc.cn"
     },
     "center" : [39.917, 116.398],
@@ -45,35 +45,183 @@
     "businessData" : [
         {
             "name" : "重大风险",
-            "xhrUrl" : "http://localhost:6888/transport/riskregister/list.do?state=0&page=1&limit=1000&ssoid=A417A5DD1BEA5F6054DCA0A8812E0D153C86710CC2F1A70A02CC1F8BD60AEF44AD6A88B4FA37833DB620CD78F5E810A0947FAE8A4531C012",
-            "clickUrl" : "",
+            "xhrUrl" : "/transport/riskregister/list.do?state=0&page=1&limit=1000&ssoid=",
+            "icon" : "images/business/fengxian_2.png",
+            "iconSize" : [20,20],
+            "visible" : true,
+            "popupAnchor" : [0,0],
+            "type" : "point",
+            "clickItem" : {
+            	"url" : "/transport/riskregister/goView.do?ssoid=",
+            	"parameter" : {
+        			"id" : "id"
+            	}
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "name"
+            	},
+            	{
+            		"name" : "类型",
+            		"field" : "typeName"
+            	}
+            ]
+        },{
+            "name" : "重大隐患",
+            "xhrUrl" : "/transport/latentregister/unitRegisterList.do?state=0&page=1&limit=1000&ssoid=",
+            "icon" : "images/business/yinhuan_1.png",
+            "iconSize" : [20,20],
+            "visible" : true,
+            "popupAnchor" : [0,0],
+            "type" : "point",
+            "clickItem" : {
+            	"url" : "/transport/latentregister/goView.do?closeButtenType=0&ssoid=",
+            	"parameter" : {
+        			"id" : "id"
+            	}
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "name"
+            	}
+            ]
+        },{
+            "name" : "事故黑点",
+            "xhrUrl" : "/construct/accident/accidentStatistics/totalData.do?state=0&page=1&limit=1000&ssoid=",
+            "icon" : "images/business/heidianico.png",
+            "iconSize" : [20,20],
+            "visible" : true,
+            "popupAnchor" : [0,0],
+            "type" : "point",
+            "clickItem" : {
+            	"url" : "/construct/accident/accidentStatistics/goView.do?ssoid=",
+            	"parameter" : {
+        			"id" : "id",
+        			"typeCode" : "typeCode"
+            	}
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "name"
+            	}
+            ]
+        },{
+            "name" : "项目信息",
+            "xhrUrl" : "/construct/build/fieldarea/queryItemAndDetail.do?ssoid=",
             "icon" : "images/marker-icon.png",
             "iconSize" : [12,20],
             "visible" : true,
             "popupAnchor" : [0,0],
-            "type" : "point"
+            "type" : "point",
+            "clickItem" : {
+            	"Distinguish" : {
+            		"field" : "type" ,
+            		"url" : {
+            			"item" : "/construct/item/libitem/goView.do?closeButtonType=1&ssoid=",
+            			"itemDetail" : "/construct/item/libdetail/goView.do?closeButtonType=1&ssoid="
+            		}
+            	},
+            	"url" : "/transport/riskregister/goView.do?ssoid",
+            	"parameter" : {
+        			"id" : "id"
+            	}
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "name"
+            	}
+            ]
+        },{
+            "name" : "应急资源",
+            "xhrUrl" : "/construct/build/emergencyrelmater/list.do?state=0&page=1&limit=1000&ssoid=",
+            "icon" : "images/business/yingjijiuyuan.png",
+            "iconSize" : [20,20],
+            "visible" : true,
+            "popupAnchor" : [0,0],
+            "type" : "point",
+            "clickItem" : {
+            	"url" : "/construct/build/emergencyrelmater/goView.do?ssoid=",
+            	"parameter" : {
+        			"id" : "id"
+            	}
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "itemContentName"
+            	}
+            ]
+        },{
+            "name" : "现场区域",
+            "xhrUrl" : "/construct/build/fieldarea/list.do?state=0&page=1&limit=1000&ssoid=",
+            "icon" : "images/marker-icon.png",
+            "iconSize" : [12,20],
+            "visible" : true,
+            "popupAnchor" : [0,0],
+            "type" : "polygon",
+            "clickItem" : {
+            	"url" : "/construct/build/fieldareadetail/list.do?state=0&page=1&limit=1000&ssoid=",
+            	"parameter" : {
+        			"areaId" : "id"
+            	},
+            	"drawArea" : true
+            },
+            "tooltip" : [
+            	{
+            		"name" : "",
+            		"field" : "amenity"
+            	},
+            	{
+            		"name" : "名称",
+            		"field" : "name"
+            	}
+            ]
         }
     ],
     "tiledLayers" : [
         {
-            "name" : "ESRI街道",
+            "name" : "天地图",
             "attribute" : "",
-            "img" : "http://39.105.39.37/LeafletDemo/LeafletDemo/images/0.png",
-            "path3" : "http://39.105.39.37/layerCache",
-            "path" : "http://39.105.39.37/esriTiles/tiles/{z}/{x}/{y}.png",
-            "path1" : "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png",
+            "img" : "images/0.png",
+            "path" : "http://localhost/tianditu/{z}/{x}/{y}.png",
+            "pathOnLine" : "http://t1.tianditu.com/DataServer?T=cva_w&X={x}&Y={y}&L={z}&tk=174705aebfe31b79b3587279e211cb9a",
+            "pathOnLine1" : "http://t1.tianditu.com/DataServer?T=vec_w&X={x}&Y={y}&L={z}&tk=174705aebfe31b79b3587279e211cb9a",
             "cache" : false,
             "visible" : false,
-            "label" : "ESRI街道",
-            "maxZoom" : 17,
-		    "minZoom" : 0
+            "label" : "天地图",
+            "maxZoom" : 16,
+		    "minZoom" : 1
         }
     ],
     "menuList" : [{
         "ID":"dcfae3bd-1ecf-489f-954a-92b7377da367",
         "functionID":"2e0076ec-cfc6-4001-bfd4-a6917ee125c5",
         "img":"icon_ziyuanmulu02.png",
-        "name":"定位",
+        "name":"经纬度定位",
         "menuId" : 1,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
@@ -94,36 +242,29 @@
         "ID":"0b90a502-22f2-43c1-8664-4b13e2a04376",
         "functionID":"74043E288A0840E5AD0008C748B18CF8",
         "img":"icon_tongjifenxi02.png",
-        "name":"标绘",
+        "name":"要素标注",
         "menuId" : 6,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"ebc6baaa-5f1f-4bd3-9097-54f54f9b920f",
         "functionID":"74043E288A0840E5AD0008C748B18CEE",
         "img":"icon_huanchongfenxi02.png",
-        "name":"缓冲区分析",
+        "name":"缓冲分析",
         "menuId" : 7,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"383da6c1-66d6-4fc1-93fa-674a614b997e",
         "functionID":"5b7426b5-7edd-4849-903a-7ae4ae193d85",
         "img":"icon_ditusousuo02.png",
-        "name":"数据聚合",
+        "name":"聚合分析",
         "menuId" : 4,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
         "functionID":"04189da7-5d99-451f-bbdf-92e6df2da468",
         "img":"icon_shishifenxi02.png",
-        "name":"热力分析",
+        "name":"热度分析",
         "menuId" : 5,
-        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
-    },{
-        "ID":"7d8f6e60-d61a-4f87-a326-0757652dcbd8",
-        "functionID":"74043E288A0840E5AD0008C748B18C78",
-        "img":"icon_gerenzhuanti02.png",
-        "name":"echarts",
-        "menuId" : 8,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9a",
@@ -131,6 +272,13 @@
         "img":"icon_shishifenxi02.png",
         "name":"网格分析",
         "menuId" : 9,
+        "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
+    },{
+        "ID":"7d8f6e60-d61a-4f87-a326-0757652dcbd8",
+        "functionID":"74043E288A0840E5AD0008C748B18C78",
+        "img":"icon_gerenzhuanti02.png",
+        "name":"综合分析",
+        "menuId" : 8,
         "roleID":"4f73c902-d2f9-43dc-99ac-fdb1cf4641ee"
     },{
         "ID":"08d00944-c8ea-4ca8-8d98-ea3d49db4f9sxsx",

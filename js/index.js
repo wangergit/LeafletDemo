@@ -1,103 +1,105 @@
 //全局变量
-var map = null
-var basemaps = [] //底图
-var osm //openStreetMap
-var tiles //tileLayer
-var leafletView = null //聚合图
-var heatMapLayer = null //热力图
-var windowInterval = null
-var printer = null 
-var config = {}
-var drawnItems //标注要素图层
-var drawTool //绘制工具
-var poiLayers  //
-var searchControl //业务数据搜索的工具
-var placeSearchControl //地名数据搜索的工具
-var superHeatMapLayer // 
-var liveRenderer //
-var liveDataSet //
-var liveLayerOption //
-var bufferState = false //缓冲区分析的状态值
-var bufferFeature //当前缓冲分析的要素
-var pagingData //分页数据
-var bufferGeo //缓冲后的geojson
-var plotLayer //常用标绘图层   小图标啥的
-var realtimeWidget //实时数据展示控件
-
+var map = null;
+var basemaps = [] ;//底图
+var osm ;//openStreetMap
+var tiles ;//tileLayer
+var leafletView = null ;//聚合图
+var heatMapLayer = null; //热力图
+var windowInterval = null;
+var printer = null ;
+var config = {};
+var drawnItems; //标注要素图层
+var drawTool ;//绘制工具
+var poiLayers ; // 数据查询
+var searchControl ;//业务数据搜索的工具
+var placeSearchControl ;//地名数据搜索的工具
+var superHeatMapLayer ;// 
+var liveRenderer ;//
+var liveDataSet ;//
+var liveLayerOption ;//
+var bufferState = false ;//缓冲区分析的状态值
+var bufferFeature ;//当前缓冲分析的要素
+var pagingData ;//分页数据
+var bufferGeo ;//缓冲后的geojson
+var plotLayer ;//常用标绘图层   小图标啥的
+var realtimeWidget ;//实时数据展示控件
+var overlayMaps = {}; //全局图层对象声明
+var ssoid = "7E2E61FDA52822A3034203C55164C293B1B910368DBF7FB2492AEFAB55B4043FAD6A88B4FA37833D26C9BD0208EF80E2FC77EB0B3866FB7C";
 
 /**
  * 初始化地图组件
  * @param {json} data 
  */
 function initMap(data){
-    config = data
-    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18})
+    config = data;
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18});
 
     //创建地图组件
     map = new L.Map('map' ,{
         zoomControl: false ,//缩放控件
         attributionControl : false,//属性控件
         //layers : basemaps
-    })
+    });
     for(var i = 0 ; i < config.tiledLayers.length ; i ++){
-        if(config.tiledLayers[i].label.indexOf("街道") > -1){
-            if(config.tiledLayers[i].cache){//arcgis切片格式
-                // loadScript("js/L.tileLayer.tileLoad.js",function(){})
-                // tiles = new L.TileLayer.TileLoad(config.tiledLayers[i].path, {
-                //     label : config.tiledLayers[i].label,
-                //     maxZoom : config.tiledLayers[i].maxZoom,
-                //     minZoom : config.tiledLayers[i].minZoom,
-                //     errorTileUrl : config.errorTileUrl,
-                //     continuousWorld: true,
-                //     visible : config.tiledLayers[i].visible
-                // }).addTo(map)
-            }else{
-                tiles = new L.tileLayer(config.tiledLayers[i].path, {
+    	if(config.tiledLayers[i].cache){//arcgis切片格式
+            // loadScript("js/L.tileLayer.tileLoad.js",function(){})
+            // tiles = new L.TileLayer.TileLoad(config.tiledLayers[i].path, {
+            //     label : config.tiledLayers[i].label,
+            //     maxZoom : config.tiledLayers[i].maxZoom,
+            //     minZoom : config.tiledLayers[i].minZoom,
+            //     errorTileUrl : config.errorTileUrl,
+            //     continuousWorld: true,
+            //     visible : config.tiledLayers[i].visible
+            // }).addTo(map);
+        }else{
+            if(navigator.onLine){
+        		new L.tileLayer(config.tiledLayers[i].pathOnLine1, {
                     label : config.tiledLayers[i].label,
                     maxZoom : config.tiledLayers[i].maxZoom,
                     minZoom : config.tiledLayers[i].minZoom,
                     errorTileUrl : config.errorTileUrl,
                     visible : config.tiledLayers[i].visible
-                }).addTo(map)
-            }
-            basemaps.push(tiles)
-        }else{
-            basemaps.push(L.tileLayer(config.tiledLayers[i].path, {
-                visible : config.tiledLayers[i].visible,
-                errorTileUrl : config.errorTileUrl,
+                }).addTo(map);
+        	}
+            tiles = new L.tileLayer(navigator.onLine?config.tiledLayers[i].pathOnLine:config.tiledLayers[i].path, {
                 label : config.tiledLayers[i].label,
                 maxZoom : config.tiledLayers[i].maxZoom,
-                minZoom : config.tiledLayers[i].minZoom
-            }).addTo(map))
+                minZoom : config.tiledLayers[i].minZoom,
+                errorTileUrl : config.errorTileUrl,
+                visible : config.tiledLayers[i].visible
+            }).addTo(map);
         }
+        basemaps.push(tiles);
     }
     //书签
-    //if (!map.restoreView()) {
-    map.setView(config.center, config.zoom)
-    //}
-    drawnItems = L.featureGroup()
-    map.addLayer(drawnItems)
-    attributionControl()
-    zoomControl()
-    fullscreenControl()
-    measureControl()
-    scaleControl()
-    navbarControl()
-    mousePositioControl()
-    printerControl()
-    magnifyingGlassControl()
-    //layersListControl()
-    getBusinessData()
-    miniMapControl()
-    basemapsControl()
-    initMenu(config.menuList)
-    clearEasyButton()
+    if (!map.restoreView()) {
+        map.setView(config.center, config.zoom);
+    }
+    drawnItems = L.featureGroup();
+    map.addLayer(drawnItems);
+    attributionControl();
+    zoomControl();
+    fullscreenControl();
+    measureControl();
+    scaleControl();
+    navbarControl();
+    mousePositioControl();
+    printerControl();
+    magnifyingGlassControl();
+    getBusinessData();
+    miniMapControl();
+    basemapsControl();
+    initMenu(config.menuList);
+    clearEasyButton();
+    map.on("zoomend",function(){
+        console.log(map.getZoom())
+    });
 }
 
 //请求配置文件
 function getConfig (){
-    sendAjax("config/config.json","GET",initMap)
+    sendAjax("config/config.json","GET",initMap);
 }
 
 /**
@@ -109,7 +111,7 @@ function basemapsControl(){
         tileX: 0,
         tileY: 0,
         tileZ: 1
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
@@ -119,21 +121,21 @@ function scaleControl(){
     config.scaleControl ? L.control.scale({
         imperial : false , 
         position : config.scalePosition
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
  * 平移
  */
 function panControl(){
-    L.control.pan().addTo(map)
+    L.control.pan().addTo(map);
 }
 
 /**
  * 缩放
  */
 function zoomControl(){
-    //L.control.zoom().addTo(map)
+    //L.control.zoom().addTo(map);
     config.zoomControl ? L.control.slider({
         map : map,
         position : config.zoomPosition,
@@ -141,7 +143,7 @@ function zoomControl(){
         provinceLevel : config.zoomLevel.provinceLevel,
         cityLevel : config.zoomLevel.cityLevel ,
         streetLevel : config.zoomLevel.streetLevel
-    }) : null
+    }) : null;
 }
 
 /**
@@ -150,7 +152,7 @@ function zoomControl(){
 function navbarControl(){
     config.navbarControl ? L.control.navbar({
         position : config.navbarPosition
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
@@ -160,7 +162,7 @@ function mousePositioControl(){
     config.mousePositionControl ? L.control.mousePosition({
         lngFirst : true,
         position : config.mousePosition
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
@@ -169,19 +171,19 @@ function mousePositioControl(){
 function printerControl(){
     config.printerControl ? printer = L.easyPrint({
         tileLayer: tiles,
-        sizeModes: ['A4Landscape', 'A4Portrait'],
+        sizeModes: ['Current'],
         filename: 'myMap',
         exportOnly: true,
         hideControlContainer: true,
         position : config.printerPosition
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
  * 执行打印
  */
 function manualPrint() {
-    printer.printMap('CurrentSize', 'MyManualPrint')
+    printer.printMap('CurrentSize', 'MyManualPrint');
 }
 
 /**
@@ -190,7 +192,7 @@ function manualPrint() {
 function attributionControl(){
     config.attributionControl ? L.control.attribution({
         "prefix" : "<a href='" + config.attribute.link + "' title='" + config.attribute.title + "' target='_blank'>" + config.attribute.name + "</a>"
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
@@ -198,13 +200,13 @@ function attributionControl(){
  */
 function miniMapControl() {
     if(!config.miniMapControl) return
-    var miniMap = new L.Control.MiniMap(osm, { toggleDisplay: true }).addTo(map)
+    var miniMap = new L.Control.MiniMap(osm, { toggleDisplay: true }).addTo(map);
     miniMap.on("toggle", function(data) {
-    })
+    });
     miniMap.on("minimize", function() {
-    })
+    });
     miniMap.on("restore", function() {
-    })
+    });
     var actionButton = new (L.Control.extend({
         options: {
             position: config.miniMapPosition,
@@ -214,73 +216,73 @@ function miniMapControl() {
             listeners: []
         },
         initialize: function (options) {
-            L.setOptions(this, options)
-            this._status = this.options.status
+            L.setOptions(this, options);
+            this._status = this.options.status;
         },
         onAdd: function () {
-            var container = L.DomUtil.create('div', 'leaflet-control-actionbtn leaflet-bar leaflet-control')
-            var link = this._link = L.DomUtil.create('a', '', container)
-            link.href = '#'
-            link.innerHTML = this.options.html
-            link.title = this.options.title || this.options.html
-            L.DomEvent.on(link, 'click', this._onBtnClick, this)
+            var container = L.DomUtil.create('div', 'leaflet-control-actionbtn leaflet-bar leaflet-control');
+            var link = this._link = L.DomUtil.create('a', '', container);
+            link.href = '#';
+            link.innerHTML = this.options.html;
+            link.title = this.options.title || this.options.html;
+            L.DomEvent.on(link, 'click', this._onBtnClick, this);
             if (this.options.status) {
-                this._toggle()
+                this._toggle();
             }
-            this._addListeners()
-            return container
+            this._addListeners();
+            return container;
         },
         toggle: function () {
-            this._toggle()
+            this._toggle();
             if (this.options.action) {
-                this._removeListeners()
+                this._removeListeners();
                 this._forListeners(null, function (listener) {
-                    listener[0].once(listener[1], this._addListeners, this)
-                })
-                this.options.action.call(this, this._status)
+                    listener[0].once(listener[1], this._addListeners, this);
+                });
+                this.options.action.call(this, this._status);
             }
         },
         _toggle: function () {
-            this._status = !this._status
+            this._status = !this._status;
             if (!this._status) {
-                L.DomUtil.addClass(this._link, this.options.toggleClass)
+                L.DomUtil.addClass(this._link, this.options.toggleClass);
             } else {
-                L.DomUtil.removeClass(this._link, this.options.toggleClass)
+                L.DomUtil.removeClass(this._link, this.options.toggleClass);
             }
         },
         _addListeners: function () {
-            this._forListeners()
+            this._forListeners();
         },
         _removeListeners: function () {
-            this._forListeners(true)
+            this._forListeners(true);
         },
         _forListeners: function (off, func) {
             if (this.options.listeners.length) {
                 for (var fry = 0; fry < this.options.listeners.length; fry++) {
-                    var listener = this.options.listeners[fry]
-                    var action = listener[0] && listener[0][off ? "off" : "on"]
+                    var listener = this.options.listeners[fry];
+                    var action = listener[0] && listener[0][off ? "off" : "on"];
                     if (action && typeof listener[1] === 'string') {
                         if (func) {
-                            func.call(this, listener)
+                            func.call(this, listener);
                         } else {
-                            action.call(listener[0], listener[1], this._toggle, this)
+                            action.call(listener[0], listener[1], this._toggle, this);
                         }
                     }
                 }
             }
         },
         _onBtnClick: function (e) {
-            L.DomEvent.stop(e)
-            this.toggle()
+            L.DomEvent.stop(e);
+            this.toggle();
         }
     }))({
-        action: function() { miniMap._toggleDisplayButtonClicked() },
+        action: function() { miniMap._toggleDisplayButtonClicked(); },
         status: !miniMap._minimized,
         html: "MINI",
         listeners: [[miniMap, "toggle"]]
-    })
-    //miniMap._toggleDisplayButtonClicked()//收起
-    actionButton.addTo(map)
+    });
+    miniMap._toggleDisplayButtonClicked();//收起
+    actionButton.addTo(map);
 }
 
 /**
@@ -296,75 +298,43 @@ function magnifyingGlassControl() {
             forceSeparateButton: false
         },
         initialize: function (magnifyingGlass, options) {
-            this._magnifyingGlass = magnifyingGlass
-            for (var i in options) if (options.hasOwnProperty(i) && this.options.hasOwnProperty(i)) this.options[i] = options[i]
+            this._magnifyingGlass = magnifyingGlass;
+            for (var i in options) if (options.hasOwnProperty(i) && this.options.hasOwnProperty(i)) this.options[i] = options[i];
         },
         onAdd: function (map) {
-            var className = 'leaflet-control-magnifying-glass', container
-            if (map.zoomControl && !this.options.forceSeparateButton) container = map.zoomControl._container
-            else container = L.DomUtil.create('div', 'leaflet-bar')
-            this._createButton(this.options.title, className, container, this._clicked, map, this._magnifyingGlass)
-            return container
+            var className = 'leaflet-control-magnifying-glass', container;
+            if (map.zoomControl && !this.options.forceSeparateButton) container = map.zoomControl._container;
+            else container = L.DomUtil.create('div', 'leaflet-bar');
+            this._createButton(this.options.title, className, container, this._clicked, map, this._magnifyingGlass);
+            return container;
         },
         _createButton: function (title, className, container, method, map, magnifyingGlass) {
-            var link = L.DomUtil.create('a', className, container)
-            link.href = '#'
-            link.title = title
+            var link = L.DomUtil.create('a', className, container);
+            link.href = '#';
+            link.title = title;
             L.DomEvent
             .addListener(link, 'click', L.DomEvent.stopPropagation)
             .addListener(link, 'click', L.DomEvent.preventDefault)
-            .addListener(link, 'click', function() {method(map, magnifyingGlass);}, map)
-            return link
+            .addListener(link, 'click', function() {method(map, magnifyingGlass);}, map);
+            return link;
         },
         _clicked: function (map, magnifyingGlass) {
             if (!magnifyingGlass) return
-            if (map.hasLayer(magnifyingGlass)) map.removeLayer(magnifyingGlass)
-            else magnifyingGlass.addTo(map)
+            if (map.hasLayer(magnifyingGlass)) map.removeLayer(magnifyingGlass);
+            else magnifyingGlass.addTo(map);
         }
-    })
+    });
     
     L.control.magnifyingglass = function (magnifyingGlass, options) {
-        return new L.Control.MagnifyingGlass(magnifyingGlass, options)
-    }
+        return new L.Control.MagnifyingGlass(magnifyingGlass, options);
+    };
     var magnifyingGlass = L.magnifyingGlass({
         zoomOffset: 3,
         layers: osm
-    })
+    });
     L.control.magnifyingglass(magnifyingGlass, {
         forceSeparateButton: true
-    }).addTo(map)
-}
-
-/**
- * 图层管理
- */
-function layersListControl(){
-    var geojsonOpts = {
-        pointToLayer: function(feature, latlng) {
-            var myIcon = L.icon({
-                iconUrl: 'http://localhost/webgis/images/custom-icon.png',
-                iconSize : [20, 20]
-            })
-            return L.marker(latlng, {
-                icon : myIcon
-            }).bindPopup(feature.properties.amenity+'<br><b>'+feature.properties.name+'</b>')
-        }
-    }
-    var overlayMaps = { 
-		"Cities": L.geoJson(bar, geojsonOpts),
-		"Cities1": L.geoJson(pharmacy, geojsonOpts),
-		"Cities2": L.geoJson(restaurant, geojsonOpts)
-    }
-    
-    // var baseMaps = { 
-    //     "<span style='color: gray'>Grayscale</span>": basemaps[0],
-    //     "Streets": basemaps[1] 
-    // }
-    var baseMaps = {}
-    for(var i = 0 ; i < basemaps.length ; i ++){
-        baseMaps[basemaps[i].options.label] = basemaps[i]
-    }
-    L.control.layers(baseMaps,overlayMaps).addTo(map)
+    }).addTo(map);
 }
 
 /**
@@ -375,16 +345,16 @@ function fullscreenControl(){
         position : config.fullscreenPosition,
         title : "全屏浏览",
         titleCancel : "退出全屏"
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
  * 测量
  */
 function measureControl(){
-    config.measureControl ? L.control.measure({
+	config.measureControl ? L.control.measure({
         position : config.measurePosition
-    }).addTo(map) : null
+    }).addTo(map) : null;
 }
 
 /**
@@ -392,112 +362,119 @@ function measureControl(){
  * @param [] results 
  */
 function initMenu(results) {
-    var pageSize = windowSize()
-    $("#videoDock")[0].style.top = (pageSize.pageHeight - 100) + "px"
+    var pageSize = windowSize();
+    $("#videoDock")[0].style.top = (pageSize.pageHeight - 100) + "px";
     if (results == null && results.length == 0) return
-    var content = ""
-    content += "<div id='slider1'> <a class='buttons prev' href='#'>left</a>  "
-    content += "<div class='viewport'>"
-    content += "<ul class='overview'>"
+    var content = "";
+    content += "<div id='slider1'> <a class='buttons prev' href='#'>left</a>  ";
+    content += "<div class='viewport'>";
+    content += "<ul class='overview'>";
     for (var i = 0; i < results.length; i++) {
-        content += "<li onclick='menuClick(" + results[i]["menuId"] + ")'><img src='images/appleToolbar/" + results[i]["img"] + "' alt='" + results[i]["name"] + "' /><span>" + results[i]["name"] + "</span></li>"
+        content += "<li onclick='menuClick(" + results[i]["menuId"] + ")'><img src='images/appleToolbar/" + results[i]["img"] + "' alt='" + results[i]["name"] + "' /><span>" + results[i]["name"] + "</span></li>";
     }
-    // if (g_userId != "ebe5027d-906d-4485-acbd-753d7421c790") {
-    //     content += "<li onclick='appleToolbarClick(\"列表\")'><img src='Images/appleToolbar/icon_gengduo02.png' alt='列表' /><span>列表</span></li>  "
-    // }
-    content += "</ul></div><a class='buttons next' href='#'>right</a></div>"
-    $("#dockContainer")[0].innerHTML = content
-    $('#slider1').tinycarousel()
+    content += "</ul></div><a class='buttons next' href='#'>right</a></div>";
+    $("#dockContainer")[0].innerHTML = content;
+    $('#slider1').tinycarousel();
 }
 
 /**
  * 菜单点击事件
  */
 function menuClick(menuId){
-    bufferState = false//缓冲区状态恢复
+    bufferState = false;//缓冲区状态恢复
+    var html = "";
     switch(menuId){
         case 1 ://经纬度定位
-            var html = ""
-            html += '<input id="jd" type="text" value="" placeholder="经度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
-            html += '<input id="wd" type="text" value="" placeholder="纬度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
-            html += '<input id="zoom" type="text" value="" placeholder="级别" class="form-control input-sm" style="width: 120px;margin-top: 3px;">'
-            html += '</br><button type="button" class="btn btn-primary" onclick="centerAndZoom()">定位</button>'
+            html += '<input id="jd" type="text" value="" placeholder="经度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">';
+            html += '<input id="wd" type="text" value="" placeholder="纬度" class="form-control input-sm" style="width: 120px;margin-top: 3px;">';
+            html += '<input id="zoom" type="text" value="" placeholder="级别" class="form-control input-sm" style="width: 120px;margin-top: 3px;">';
+            html += '</br><button type="button" class="btn btn-primary" onclick="centerAndZoom()">定位</button>';
             L.control.window("map",{
                 visible : true,
                 title : "经纬度定位",
                 content : html
-            })
-            break
+            });
+            break;
         case 2 ://地名查询
-            initPlaceSearchControl()
-            break
+            initPlaceSearchControl();
+            break;
         case 3 ://数据查询
-            initSearchControl()
-            break
+            initSearchControl();
+            break;
         case 4 ://聚合
-            var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
-            html = getOptionsContent(html)
-            html += '</select>'
-            html += '<div href="#" id="size">Cluster size: <input type="range" value="160" min="35" max="500" step="1" id="sizeInput"/><span id="currentSize">160</span></div>'
-            html += '<button type="button" class="btn btn-primary" onclick="PruneClusterLayer()">聚合</button>'
-            html += '<button type="button" class="btn btn-primary" onclick="clearPruneClusterLayer()" style="margin-left: 35px;">清除</button>'
+            html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">';
+            html = getOptionsContent(html);
+            html += '</select>';
+            html += '<div href="#" id="size">Cluster size: <input type="range" value="160" min="35" max="500" step="1" id="sizeInput"/><span id="currentSize">160</span></div>';
+            html += '<button type="button" class="btn btn-primary" onclick="PruneClusterLayer()">聚合</button>';
+            html += '<button type="button" class="btn btn-primary" onclick="clearPruneClusterLayer()" style="margin-left: 35px;">清除</button>';
             L.control.window("map",{
                 visible : true,
                 title : "数据聚合",
                 content : html
-            })
-            var currentSizeSpan = document.getElementById('currentSize')
+            });
+            var currentSizeSpan = document.getElementById('currentSize');
             var updateSize = function () {
-                currentSizeSpan.firstChild.data = this.value
-            }
-            document.getElementById('sizeInput').onchange = updateSize
-            document.getElementById('sizeInput').oninput = updateSize
-            break
+                currentSizeSpan.firstChild.data = this.value;
+            };
+            document.getElementById('sizeInput').onchange = updateSize;
+            document.getElementById('sizeInput').oninput = updateSize;
+            break;
         case 5://热力图
-            var html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
-            html = getOptionsContent(html)
-            html += '</select>'
-            html += '<button type="button" class="btn btn-primary" onclick="HeatLayer()">分析</button>'
-            html += '<button type="button" class="btn btn-primary" onclick="clearHeatLayer()" style="margin-left: 35px;">清除</button>'
+            html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">';
+            html = getOptionsContent(html);
+            html += '</select>';
+            html += '<button type="button" class="btn btn-primary" onclick="HeatLayer()">分析</button>';
+            html += '<button type="button" class="btn btn-primary" onclick="clearHeatLayer()" style="margin-left: 35px;">清除</button>';
             L.control.window("map",{
                 visible : true,
                 title : "热力分析",
                 content : html
-            })
-            break
+            });
+            break;
         case 6 ://标注
-            initDrawToolbar()
-            break
+            initDrawToolbar();
+            break;
         case 7 ://缓冲区分析
-            initDrawToolbar(true)
-            bufferState = true
-            var html = '<p id="bufferReminder">请先自绘制要素，然后点击进行缓冲区分析。</p>'
-            html += '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">'
-            html = getOptionsContent(html)
-            html += '</select>'
-            html += '要素：<input id="bufferItem" type="text" value="" placeholder="请选择要缓冲的要素" class="form-control input-sm" style="width: 190px;display: inline-block;"></br>'
-            html += '半径：<input id="bufferValue" type="text" value="" placeholder="缓冲半径（仅支持数字类型）/米" class="form-control input-sm" style="margin-top: 5px;width: 190px;display: inline-block;margin-bottom: 5px;"></br>'
-            html += '<button type="button" class="btn btn-primary" onclick="bufferTrigger()" style="margin-left: 35px;">缓冲</button>'
-            html += '<button type="button" class="btn btn-primary" onclick="bufferAnalysisTrigger()" style="margin-left: 35px;">分析</button>'
-            html += '<button type="button" class="btn btn-primary" onclick="clearbufferAnalysis()" style="margin-left: 35px;">清除</button>'
-            html += '<div id="pageContainer" class="pageContainer" ><div class="infoContainer" id="infoContainer"></div><div id="paging" class="paging"></div></div>'
+            initDrawToolbar(true);
+            bufferState = true;
+            html = '<p id="bufferReminder">请先自绘制要素，然后点击进行缓冲区分析。</p>';
+            html += '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">';
+            html = getOptionsContent(html);
+            html += '</select>';
+            html += '要素：<input id="bufferItem" type="text" value="" placeholder="请选择要缓冲的要素" class="form-control input-sm" style="width: 190px;display: inline-block;"></br>';
+            html += '半径：<input id="bufferValue" type="text" value="" placeholder="缓冲半径（仅支持数字类型）/米" class="form-control input-sm" style="margin-top: 5px;width: 190px;display: inline-block;margin-bottom: 5px;"></br>';
+            html += '<button type="button" class="btn btn-primary" onclick="bufferTrigger()" style="margin-left: 35px;">缓冲</button>';
+            html += '<button type="button" class="btn btn-primary" onclick="bufferAnalysisTrigger()" style="margin-left: 35px;">分析</button>';
+            html += '<button type="button" class="btn btn-primary" onclick="clearbufferAnalysis()" style="margin-left: 35px;">清除</button>';
+            html += '<div id="pageContainer" class="pageContainer" ><div class="infoContainer" id="infoContainer"></div><div id="paging" class="paging"></div></div>';
             L.control.window("map",{
                 visible : true,
                 title : "缓冲区分析",
                 content : html
-            })
-            break
+            });
+            break;
         case 8://Echarts图表
-            initEchartsLayer()  
-            break
+            initEchartsLayer() ; 
+            break;
         case 9://网格分析
-            initGridLayer()  
-            break
+            //initGridLayer()  ;
+            html = '<select id="businessSelect" data-toggle="select" class="select-info mrs mbm select2-container form-control select " style="background-color: #007bff;color: white;">';
+            html = getOptionsContent(html);
+            html += '</select>';
+            html += '<button type="button" class="btn btn-primary" onclick="initGridLayer()">分析</button>';
+            html += '<button type="button" class="btn btn-primary" onclick="clearGridLayer()" style="margin-left: 35px;">清除</button>';
+            L.control.window("map",{
+                visible : true,
+                title : "网格分析",
+                content : html
+            });
+            break;
         case 10://实时数据展示
-            initRealtimeWidget()  
-            break
+            initRealtimeWidget()  ;
+            break;
         default:
-            break
+            break;
     }
 }
 
@@ -509,14 +486,16 @@ function menuClick(menuId){
  */
 function centerAndZoom(x,y,zoom){
     if(x && y && typeof(zoom) == "number"){
-        map.setView([parseFloat(y),parseFloat(x)], parseInt(zoom))
-        addPositionMarker(x,y)
+        map.setView([parseFloat(y),parseFloat(x)], parseInt(zoom));
+        addPositionMarker(x,y);
     }else{
-        var jd = $("#jd")[0].value
-        var wd = $("#wd")[0].value
-        var zoom = $("#zoom")[0].value
-        if(jd && wd && zoom) map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom))
-        else alert("请输入正确的经纬度及缩放比例")
+        var jd = $("#jd")[0].value;
+        var wd = $("#wd")[0].value;
+        var zoom = $("#zoom")[0].value;
+        if(jd && wd && zoom) {
+        	map.setView([parseFloat(wd),parseFloat(jd)], parseInt(zoom));
+            addPositionMarker(jd,wd);
+        }else alert("请输入正确的经纬度及缩放比例");
     }
 }
 
@@ -526,48 +505,65 @@ function centerAndZoom(x,y,zoom){
  * @param {*} y 
  */
 function addPositionMarker(x,y){
-    plotLayer.clearLayers()
+    plotLayer.clearLayers();
     var myIcon = L.icon({
         iconUrl: config.positionImg,
-        iconSize : [12, 20]
-    })
+        iconSize : config.positionImgSize
+    });
     L.marker(L.latLng(y, x), {
         icon : myIcon
-    }).addTo(plotLayer)
+    }).addTo(plotLayer).bindTooltip("坐标：" + x + "," + y);
 }
 
 /**
  * 加载业务数据
  */
 function getBusinessData(){
-    var overlayMaps = {"标注图层" : drawnItems}
-    poiLayers = L.layerGroup()
-    plotLayer = L.layerGroup()
-    map.addLayer(plotLayer)
+    overlayMaps = {"个人标注" : drawnItems};
+    poiLayers = L.layerGroup();
+    plotLayer = L.layerGroup();
+    map.addLayer(plotLayer);
     for(var i = 0 ; i < config.businessData.length ; i ++){
+    	var tooltip = config.businessData[i].tooltip ? config.businessData[i].tooltip : [];
         var geojsonOpts = {
             pointToLayer : function(feature, latlng) {
                 var myIcon = L.icon({
                     iconUrl: config.businessData[i].icon,
                     iconSize : config.businessData[i].iconSize,
                     popupAnchor : config.businessData[i].popupAnchor
-                })
-                return L.marker(latlng, {
+                });
+                var str = "";
+            	for (var int = 0; int < tooltip.length; int++) {
+            		str += (int > 0 ? "</br>" : "") + tooltip[int].name + (tooltip[int].name?":":"") + disposeString(feature.properties[tooltip[int].field]);
+				}
+            	return L.marker(latlng, {
                     icon : myIcon
-                }).bindTooltip(feature.properties.typeName+'<br><b>'+feature.properties.name+'</b>')
+                }).bindTooltip(str);
+            },
+            style : function (feature) {
+                return {
+                    color: '#FF0000',
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.3,
+                    //weight: 2,
+                    //dashArray: '10'
+                };
             }
-        }
-        var results = exchangeData(syncGetData("",config.businessData[i].xhrUrl),config.businessData[i].name)
-        var layer = L.geoJson(results,geojsonOpts)
+        };
+        var results = exchangeData(syncGetData("",config.host + config.businessData[i].xhrUrl + "" + ssoid),config.businessData[i].name,config.businessData[i].type);
+        var layer = L.geoJson(results,geojsonOpts);
         //overlayMaps["<span class='basinessSpan' style='background-image:url(" + config.businessData[i].icon + ")'></span>" + config.businessData[i].name] = L.geoJson(results,geojsonOpts)
-        overlayMaps[config.businessData[i].name] = layer
-        poiLayers.addLayer(layer)
+        overlayMaps[config.businessData[i].name] = layer;
+        poiLayers.addLayer(layer);
+        layer.on("click",function(feature){
+        	clickLayerFeature(feature);
+        });
     }
-    var baseMaps = {}
+    var baseMaps = {};
     for(var i = 0 ; i < basemaps.length ; i ++){
-        baseMaps[basemaps[i].options.label] = basemaps[i]
+        baseMaps[basemaps[i].options.label] = basemaps[i];
     }
-    L.control.layers(baseMaps,overlayMaps).addTo(map)
+    L.control.layers(baseMaps,overlayMaps).addTo(map);
 }
 
 /**
@@ -576,24 +572,24 @@ function getBusinessData(){
  * @param {*} callback 
  */
 function loadScript(url, callback) {  
-    var script = document.createElement("script") 
-    script.type = "text/javascript"
+    var script = document.createElement("script") ;
+    script.type = "text/javascript";
     if(typeof(callback) != "undefined"){  
         if (script.readyState) {  
             script.onreadystatechange = function () {  
                 if (script.readyState == "loaded" || script.readyState == "complete") {  
-                    script.onreadystatechange = null 
-                    callback()
+                    script.onreadystatechange = null ;
+                    callback();
                 }  
-            } 
+            } ;
         } else {  
             script.onload = function () {  
                 callback();  
-            }
+            };
         }  
     } 
-    script.src = url
-    document.body.appendChild(script) 
+    script.src = url;
+    document.body.appendChild(script) ;
 }
 
 /**
@@ -601,26 +597,29 @@ function loadScript(url, callback) {
  */
 function clearEasyButton(){
     config.menuButton ? L.easyButton("menuBtn", function (e) {
-        if($("#videoDock")[0].style.display == "inline-block" || !$("#videoDock")[0].style.display) {$("#videoDock")[0].style.display = "none"}
-        else  {$("#videoDock")[0].style.display = "inline-block"}
-     }, '工具栏').addTo(map) : null
+        if($("#videoDock")[0].style.display == "inline-block" || !$("#videoDock")[0].style.display) {$("#videoDock")[0].style.display = "none";}
+        else  {$("#videoDock")[0].style.display = "inline-block";}
+     }, '工具栏').addTo(map) : null;
     config.clearEasyButton ? L.easyButton("clearBtn", function (e) {
         if(bufferGeo){
-            map.removeLayer(bufferGeo)
-            bufferGeo = null
+            map.removeLayer(bufferGeo);
+            bufferGeo = null;
         }
-        if(drawnItems) drawnItems.clearLayers()
-        if(plotLayer) plotLayer.clearLayers()
-     }, '清除').addTo(map) : null
+        if(drawnItems) drawnItems.clearLayers();
+        if(plotLayer) plotLayer.clearLayers();
+        map.eachLayer(function(item,index){
+			if(item._path) item.remove();
+		});
+     }, '清除').addTo(map) : null;
 }
 
 function resizePage(){
-    var pageSize = windowSize()
-    $("#videoDock")[0] && ($("#videoDock")[0].style.top = (pageSize.windowHeight - 100) + "px")
+    var pageSize = windowSize();
+    $("#videoDock")[0] && ($("#videoDock")[0].style.top = (pageSize.windowHeight - 100) + "px");
 }
 
 getConfig()//初始化
 
 window.onresize = function() {
-    resizePage()
-}
+    resizePage();
+};

@@ -3,12 +3,12 @@
  */
 function initDrawToolbar(bool){
     if(drawTool) {
-        if(!bool) destoryDrawToolbar()
+        if(!bool) destoryDrawToolbar();
         return
     }
     drawnItems.on("click",function(layer){
-        drawItemTrigger(layer.layer)
-    })
+        drawItemTrigger(layer.layer);
+    });
     drawTool = new L.Control.Draw({
         edit: {
             featureGroup: drawnItems,
@@ -22,47 +22,47 @@ function initDrawToolbar(bool){
                 showArea:true
             }
         }
-    })
-    map.addControl(drawTool)
+    });
+    map.addControl(drawTool);
     var _round = function(num, len) {
         return Math.round(num*(Math.pow(10, len)))/(Math.pow(10, len));
-    }
+    };
     var strLatLng = function(latlng) {
         return "(" + _round(latlng.lat, 3) + ", " + _round(latlng.lng, 3) + ")";
-    }
+    };
     var getPopupContent = function(layer) {
         if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-            return strLatLng(layer.getLatLng())
+            return strLatLng(layer.getLatLng());
         } else if (layer instanceof L.Circle) {
             var center = layer.getLatLng(),radius = layer.getRadius()
-            return "Center: "+strLatLng(center)+"<br />" +"Radius: "+_round(radius, 2)+" m"
+            return "Center: "+strLatLng(center)+"<br />" +"Radius: "+_round(radius, 2)+" m";
         } else if (layer instanceof L.Polygon) {
             var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
-                area = L.GeometryUtil.geodesicArea(latlngs)
-            return "Area: " + L.GeometryUtil.readableArea(area, true)
+                area = L.GeometryUtil.geodesicArea(latlngs);
+            return "Area: " + L.GeometryUtil.readableArea(area, true);
         } else if (layer instanceof L.Polyline) {
             var latlngs = layer._defaultShape ? layer._defaultShape() : layer.getLatLngs(),
-                distance = 0
+                distance = 0;
             if (latlngs.length < 2) {
-                return "Distance: N/A"
+                return "Distance: N/A";
             } else {
                 for (var i = 0; i < latlngs.length-1; i++) {
-                    distance += latlngs[i].distanceTo(latlngs[i+1])
+                    distance += latlngs[i].distanceTo(latlngs[i+1]);
                 }
-                return "Distance: "+_round(distance, 2)+" m"
+                return "Distance: "+_round(distance, 2)+" m";
             }
         }
-        return null
-    }
+        return null;
+    };
     map.on(L.Draw.Event.CREATED, function(event) {
-        var layer = event.layer
+        var layer = event.layer;
         //以下是点击弹出长度距离面积
         // var content = getPopupContent(layer)
         // if (content !== null) {
         //     layer.bindPopup(content)
         // }
-        drawnItems.addLayer(layer)
-    })
+        drawnItems.addLayer(layer);
+    });
     map.on(L.Draw.Event.EDITED, function(event) {
         // var layers = event.layers,
         //     content = null
@@ -72,7 +72,7 @@ function initDrawToolbar(bool){
         //         layer.setPopupContent(content)
         //     }
         // })
-    })
+    });
 }
 
 /**
@@ -82,10 +82,16 @@ function initDrawToolbar(bool){
 function drawItemTrigger(feature){
     if(bufferState){//缓冲区分析
         if($("#bufferItem")[0]){
-            $("#bufferItem")[0].value = JSON.stringify(feature.toGeoJSON())
+            $("#bufferItem")[0].value = JSON.stringify(feature.toGeoJSON());
         }
     }else {//保存要素
-
+    	var tmpjsonStr = feature.toGeoJSON();
+		var index = parent.layer.getFrameIndex(wname);
+		var body = parent.layer.getChildFrame('body', index);
+		body.contents().find("#" + posObj).val(tmpjsonStr);
+		console.log(tmpjsonStr);
+		index = parent.layer.getFrameIndex(window.name); // 先得到当前iframe层的索引
+		parent.layer.close(index); // 再执行关闭
     }
 }
 
@@ -145,8 +151,8 @@ function bufferAnalysisTrigger(){
     if(results.length > 0){
         pagingControl(results)
     }else{
-        $("#paging")[0] &&　($("#paging")[0].innerHTML = "")
-        $("#infoContainer")[0] &&　($("#infoContainer")[0].innerHTML = "范围内无查询结果")
+        if($("#paging")[0]) ($("#paging")[0].innerHTML = "");
+        if($("#infoContainer")[0])($("#infoContainer")[0].innerHTML = "范围内无查询结果");
     }
 }
 
@@ -274,3 +280,181 @@ function windowSize() {
         'windowHeight': windowHeight
     }
 }
+
+/**
+ * 图层要素点击事件
+ * @param feature
+ */
+function clickLayerFeature(feature){
+	var layerName;
+	try{
+		layerName = feature.layer.feature.properties.amenity;
+	}catch(e){
+		return;
+	}
+	var properties = feature.layer.feature.properties;
+	var path = "";
+	var drawArea = false;
+	for (var int = 0; int < config.businessData.length; int++) {
+		if(config.businessData[int].name === layerName){
+			var items = config.businessData[int].clickItem;
+			path = config.host + items.url + ssoid + "";
+			if(items.Distinguish){
+				path = items.Distinguish[properties[items.Distinguish.field]] + ssoid + "";
+			}
+			if(items.parameter){
+				for ( var item in items.parameter) {
+					path += "&" + item + "=" + properties[items.parameter[item]];
+				}
+			}
+			drawArea = items.drawArea;
+			break;
+		}
+	}
+	if(path) {
+		if(drawArea){
+			if(!feature.layer.feature.properties.clickcount){
+				drawJsonList(syncGetData(null,path),layerName);
+				feature.layer.feature.properties.clickcount = 1;
+			}
+		}else{
+			top.layer.open({
+				type : 2,
+				title : '详情信息',
+				maxmin : true,
+				content : path,
+				area : [ '807px', '460px' ]
+			});
+		}
+	}
+}
+
+/**
+ * 绘制现场区域子集要素
+ * @param result 数据集
+ * @param parentType 父级类型
+ */
+function drawJsonList(result,parentType){
+	for (var i = 0; i < result.data.length; i++) {
+		var tmpEle = result.data[i];
+		var tmpScope = eval("(" + tmpEle.locationData + ")");
+		var myElement = undefined;
+		var fieldColor = "blue";
+		if (tmpEle.bussinessCategory == "90400001") {
+			fieldColor = "green";
+		} else if (tmpEle.bussinessCategory == "90400002") {
+			fieldColor = "black";
+		}
+		if (tmpScope != undefined && tmpScope.type != undefined) {
+			if (tmpEle.shapeCategory == '90300001') {// 中心点
+				myElement = new L.Marker(tmpScope.data[0], {
+					icon : markerIcon,
+					type : tmpEle.bussinessCategoryName,
+					description : tmpEle.description
+				});
+			} else if (tmpEle.shapeCategory == '90300002') {// 线段路径
+				myElement = new L.polyline(tmpScope.data, {
+					color : fieldColor,
+					weight : 2,
+					type : tmpEle.bussinessCategoryName,
+					description : tmpEle.description
+				});
+			} else if (tmpEle.shapeCategory == '90300003') {// 多边形范围
+				myElement = new L.Polygon(tmpScope.data, {
+					color : fieldColor,
+					weight : 2,
+					type : tmpEle.bussinessCategoryName,
+					description : tmpEle.description
+				});
+			} else if (tmpEle.shapeCategory == '90300004') {// 图片叠加
+				myElement = new L.imageOverlay("/authentic/dfs/download.do?id=" + tmpEle.fileId, tmpScope.data, {
+					opacity : 0.5
+				});
+			} else if (tmpEle.shapeCategory == '90300005') {// 普通全景
+				myElement = new L.Marker(tmpScope.data[0], {
+					icon : skyboxIcon,
+					type : tmpEle.bussinessCategoryName,
+					imgType : 'normal',
+					fileId : tmpEle.fileId,
+					description : tmpEle.description
+				});
+			} else if (tmpEle.shapeCategory == '90300006') {// 深度全景
+				myElement = new L.Marker(tmpScope.data[0], {
+					icon : skyboxIcon,
+					type : tmpEle.bussinessCategoryName,
+					imgType : 'skybox',
+					fileId : tmpEle.fileId,
+					description : tmpEle.description
+				});
+			}
+		}
+		if (myElement != undefined) {
+			myElement.on("mouseover", function(e) {
+				var latlng = e.latlng;
+				var imgType = this.options.imgType;
+				var pophtml = '<div class="hintDiv"';
+				if (imgType != undefined && imgType != "" && imgType != "null") {
+					pophtml += 'style="height:150px;overflow:hidden"><h5>' + this.options.type + '</h5><br>';
+					pophtml += '<img style="width:100%" src="/authentic/dfs/download.do?id=' + this.options.fileId + '"/><br>';
+				} else {
+					pophtml += '><h5>' + this.options.type + '</h5><br>';
+					if (this.options.description != undefined) {
+						pophtml += '' + this.options.description + '<br>';
+					} else {
+						pophtml += '<br>';
+					}
+				}
+				pophtml += '</div>';
+				layerPopup = L.popup({
+					offset : L.point(0, -25),
+					autoPan : false
+				});
+				layerPopup.setLatLng(latlng);
+				layerPopup.setContent(pophtml);
+				layerPopup.openOn(map);
+			});
+			myElement.on("click", function(e) {
+				var imgType = this.options.imgType;
+				if (imgType != undefined && imgType != "" && imgType != "null") {
+					parent.layer.open({
+						type : 2,
+						title : '全景展示',
+						maxmin : true,
+						content : "/authentic/webgis/panorama.do?imgType=" + imgType + "&fileId=" + this.options.fileId,
+						area : [ '807px', '460px' ]
+					});
+				}
+			});
+			overlayMaps[parentType].addLayer(myElement);
+		}
+	}
+}
+
+/**
+ * 处理文本（未定义字符串处理）
+ * @param text
+ */
+function disposeString(text){
+	return text ? text : "";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
